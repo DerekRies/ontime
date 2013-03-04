@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+
+{% block content %} 
+<div class="hero-unit">
+      <div class="container">
+        
+        <h1>The Very Best</h1>
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Explicabo atque sunt provident ea eum veniam ipsam quibusdam vitae consequatur possimus placeat laborum amet aliquid culpa qui magnam ducimus eaque quos.</p>
+        <br>
+        <div>
+          <p>
+            <a href="/login" class="btn btn-primary btn-large">Sign Up!</a>
+            <a href="/about" class="btn btn-info btn-large">Learn More!</a>
+          </p>
+          <p style="font-size:12px;">Signing up is easy and free!</p>
+        </div>
+
+      </div>
+    </div>
+
+    <div id="steps-to-win" class="bg-color">
+      <div class="container">
+        <h3>Three Column Header</h3>
+        <hr>
+        <div class="row">
+          <div class="span4">
+            <img src="http://placehold.it/400x200" alt="">
+            <h4>Column One</h4>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aut minima officiis molestias magnam placeat rerum ipsum ullam repellendus delectus esse perferendis corporis soluta saepe! Consectetur odio voluptatum maxime cumque laboriosam.</p>
+<!--             <p>Once you've created an account you can store and access any and all data that you collect.</p> -->
+          </div>
+          <div class="span4">
+            <img src="http://placehold.it/400x200" alt="">
+            <h4>Column Two</h4>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ullam facilis eveniet animi numquam magni maxime consectetur autem quod impedit modi quibusdam odio maiores optio quisquam saepe ab aliquid deserunt necessitatibus!</p>
+          </div>
+          <div class="span4">
+            <img src="http://placehold.it/400x200" alt="">
+            <h4>Column Three</h4>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci laboriosam asperiores iusto sunt tempore eius excepturi minus quidem itaque unde laudantium non illo harum nam officiis! Minima vel provident sit?</p>
+          </div>
+        </div>
+
+        <div class="row mtop50 mbottom50">         
+          <div class="span6 offset3" id="bigSignup" >
+            <a href="/login" class="btn btn-large btn-block btn-primary">Sign Up</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+{% endblock %} 
+
+{% block scripts %}
+<script>
+  $('.carousel').carousel({
+    interval: 10000
+  });
+</script>
+{% endblock %} 

@@ -1,0 +1,44 @@
+<div cool-fade>
+    <h2>Create New Project</h2>
+    <p>You are creating a new project on this page... how does it feel?</p>
+    <hr>
+
+    <form class="form-horizontal">
+
+      <div class="control-group">
+        <label class="control-label" for="inputProjectName">Project Name:</label>
+        <div class="controls">
+          <input type="text" style="width:400px;" id="inputProjectName" placeholder="Project Name" autofocus ng-model="projectName">
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label class="control-label" for="inputProjectTags">Project Tags:</label>
+        <div class="controls">
+          <input type="text" style="width:400px;" id="inputProjectTags" placeholder="one, two, three" ng-model="projectTags">
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label class="control-label" for="inputProjectDescription">Project Description:</label>
+        <div class="controls">
+          <textarea name="" style="width:400px;" id="inputProjectDescription" rows="10" ng-model="projectDescription"></textarea>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <div class="controls">
+          <label class="checkbox">
+            <input type="checkbox" checked> Publicly Viewable
+          </label>
+          <label class="checkbox">
+            <input type="checkbox"> Publicly Editable
+          </label>
+          <br>
+          <button type="button" class="btn btn-primary btn-large" ng-click="createProject()">Create!</button>
+          <button type="button" class="btn btn-default btn-large" ng-click="resetForm()">Reset</button>
+        </div>
+      </div>
+    </form>
+
+</div>

@@ -1,0 +1,309 @@
+ UTILITY CLASSES =========== */
+
+.mtop50{
+  margin-top:50px;
+}
+
+.mtop60{
+  margin-top:60px;
+}
+
+.mtop70{
+  margin-top:70px;
+}
+
+.mtop80{
+  margin-top:80px;
+}
+
+.mtop90{
+  margin-top:90px;
+}
+
+.mtop100{
+  margin-top:100px;
+}
+
+.mbottom50{
+  margin-bottom:50px;
+}
+
+.mbottom60{
+  margin-bottom:60px;
+}
+
+.mbottom70{
+  margin-bottom:70px;
+}
+
+.mbottom80{
+  margin-bottom:80px;
+}
+
+.mbottom90{
+  margin-bottom:90px;
+}
+
+.mbottom100{
+  margin-bottom:100px;
+}
+
+.openid-large-btn {
+  width: 100px;
+  height: 60px;
+  border: 1px solid #DDD;
+  margin: 3px;
+  float: left;
+  background:white url(/app/img/openid-providers-en.png);
+}
+
+.google-id {
+  background-position: 0px 0px;
+}
+
+.yahoo-id {
+  background-position: -100px 0px;
+}
+
+.aol-id {
+  background-position: -200px 0px;
+}
+
+.myopen-id {
+  background-position: -300px 0px;
+}
+
+.open-id {
+  background-position: -400px 0px;
+}
+
+/* END UTILITY CLASSES ======= */
+
+
+
+
+
+
+
+/* TYPOGRAPHY =================*/
+
+h2 {
+    font-size:32px;
+}
+
+blockquote > blockquote {
+    background-color:#fafafa;
+}
+
+blockquote > blockquote > blockquote {
+    background-color:#EEE;
+}
+
+/* END TYPOGRAPHY =============*/
+
+
+
+
+
+
+
+/*    APPLICATION GLOBAL STYLES    */
+
+[ng\:cloak], [ng-cloak], .ng-cloak {
+  display: none !important;
+}
+
+div[cool-fade] {
+    opacity: 0;
+    -webkit-transform: translateZ( 0 );
+
+    -webkit-transition: all 350ms cubic-bezier(0.445, 0.050, 0.550, 0.950); 
+   -moz-transition: all 350ms cubic-bezier(0.445, 0.050, 0.550, 0.950); 
+    -ms-transition: all 350ms cubic-bezier(0.445, 0.050, 0.550, 0.950); 
+     -o-transition: all 350ms cubic-bezier(0.445, 0.050, 0.550, 0.950); 
+        transition: all 350ms cubic-bezier(0.445, 0.050, 0.550, 0.950); /* easeInOutSine */
+
+-webkit-transition-timing-function: cubic-bezier(0.445, 0.050, 0.550, 0.950); 
+   -moz-transition-timing-function: cubic-bezier(0.445, 0.050, 0.550, 0.950); 
+    -ms-transition-timing-function: cubic-bezier(0.445, 0.050, 0.550, 0.950); 
+     -o-transition-timing-function: cubic-bezier(0.445, 0.050, 0.550, 0.950); 
+        transition-timing-function: cubic-bezier(0.445, 0.050, 0.550, 0.950); /* easeInOutSine */
+}
+
+div[cool-fade].in {
+    opacity:1;
+    -webkit-transform: translateZ( 0 );
+}
+
+body,html {
+    height:100%;
+}
+
+.navbar .brand {
+    margin-left:0px;
+}
+
+.container-fluid {
+    padding:0px;
+    height:100%;
+}
+
+.row-fluid {
+    height:100%;
+}
+
+.filler {
+    height:100%;
+}
+
+.btn-default {
+    color:#333;
+}
+
+.btn-default:hover {
+    color:#222;
+}
+
+
+.modal.fade.in {
+    top:0%;
+   -webkit-transform: translate3d(0px,100px,0px);
+   -moz-transform: translate3d(0px,100px,0px);
+   -ms-transform: translate3d(0px,100px,0px);
+   -o-transform: translate3d(0px,100px,0px);
+   transform: translate3d(0px,100px,0px);
+}
+
+
+#content {
+    padding-top:80px;
+    margin-left:25%;
+}
+
+#content .row {
+    margin-left:0px;
+}
+
+.project-header {
+    margin-bottom:20px;
+}
+
+.progress > .bar {
+    -webkit-transition: all 1250ms cubic-bezier(0.445, 0.050, 0.550, 0.950); 
+   -moz-transition: all 1250ms cubic-bezier(0.445, 0.050, 0.550, 0.950); 
+    -ms-transition: all 1250ms cubic-bezier(0.445, 0.050, 0.550, 0.950); 
+     -o-transition: all 1250ms cubic-bezier(0.445, 0.050, 0.550, 0.950); 
+        transition: all 1250ms cubic-bezier(0.445, 0.050, 0.550, 0.950); /* easeInOutSine */
+
+-webkit-transition-timing-function: cubic-bezier(0.445, 0.050, 0.550, 0.950); 
+   -moz-transition-timing-function: cubic-bezier(0.445, 0.050, 0.550, 0.950); 
+    -ms-transition-timing-function: cubic-bezier(0.445, 0.050, 0.550, 0.950); 
+     -o-transition-timing-function: cubic-bezier(0.445, 0.050, 0.550, 0.950); 
+        transition-timing-function: cubic-bezier(0.445, 0.050, 0.550, 0.950); /* easeInOutSine */
+}
+
+/*  END APPLICATION GLOBAL STYLES  */
+
+
+
+
+/* SIDEBAR MODULE ================*/
+
+#sidebar {
+    height:100%;
+    background:#EEE;
+    /*border-right:1px solid #FFF;*/
+    padding-top:60px;
+}
+
+.nav-list>li {
+  transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -webkit-transition: all 0.5s ease;
+}
+/* The 'hidden' state to transition from & to */
+
+
+.nav-list>li.ui-animate {
+  opacity: 0;
+  background:#007FFF;
+  color:#FFF;
+  -webkit-transform: scale3d( 0.1, 0.1, 0.1 );
+
+}
+
+
+.nav-list>li>a {
+    padding:10px 15px;
+}
+
+.activeproject {
+    border-left:5px solid #007FFF;
+}
+
+/* END SIDEBAR MODULE ============*/
+
+
+
+
+
+/* TIMER MODULE STYLES ============*/
+#timer-bar-hidden {
+    position:fixed;
+    bottom:0px;
+    right:0px;
+    text-align:center;
+    padding:10px 30px;
+    z-index: 10;
+}
+
+#timer-bar-hidden a, #timer-bar a {
+    background:#673C7C;
+}
+
+#timer-bar {
+    background:#673C7C;
+    color:#FFF;
+    /*background:#007FFF;*/
+    z-index: 20;
+    width:100%;
+    height:300px;
+    padding-top:10px;
+    position:fixed;
+    bottom:-300px;
+-webkit-transition: all 500ms cubic-bezier(0.445, 0.050, 0.550, 0.950); 
+   -moz-transition: all 500ms cubic-bezier(0.445, 0.050, 0.550, 0.950); 
+    -ms-transition: all 500ms cubic-bezier(0.445, 0.050, 0.550, 0.950); 
+     -o-transition: all 500ms cubic-bezier(0.445, 0.050, 0.550, 0.950); 
+        transition: all 500ms cubic-bezier(0.445, 0.050, 0.550, 0.950); /* easeInOutSine */
+
+-webkit-transition-timing-function: cubic-bezier(0.445, 0.050, 0.550, 0.950); 
+   -moz-transition-timing-function: cubic-bezier(0.445, 0.050, 0.550, 0.950); 
+    -ms-transition-timing-function: cubic-bezier(0.445, 0.050, 0.550, 0.950); 
+     -o-transition-timing-function: cubic-bezier(0.445, 0.050, 0.550, 0.950); 
+        transition-timing-function: cubic-bezier(0.445, 0.050, 0.550, 0.950); /* easeInOutSine */
+
+
+        
+}
+
+#timer-bar.up {
+    -webkit-transform: translate3d(0px,-300px,0px);
+   -moz-transform: translate3d(0px,-300px,0px);
+   -ms-transform: translate3d(0px,-300px,0px);
+   -o-transform: translate3d(0px,-300px,0px);
+   transform: translate3d(0px,-300px,0px);
+
+
+}
+
+#timer-inner {
+    padding:0px 10px;
+}
+
+#timer-bar h2, #timer-bar h3, #timer-bar h4 {
+    color:#FFF;
+}
+
+/* END TIMER MODULE STYLES ========

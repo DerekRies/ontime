@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en" ng-app="myApp">
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <title>onTime{{{title}}}</title>
+
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width">
+
+  <!--[if lte IE 8]>
+    <script>
+    // The ieshiv takes care of our ui.directives, bootstrap module directives and 
+    // AngularJS's ng-view, ng-include, ng-pluralize and ng-switch directives.
+    // However, IF you have custom directives (yours or someone else's) then
+    // enumerate the list of tags in window.myCustomTags
+ 
+    window.myCustomTags = [ 'yourDirective', 'somebodyElsesDirective' ]; // optional
+    </script>
+    <script src="build/angular-ui-ieshiv.js"></script>
+<![endif]-->
+
+  <link rel="stylesheet" href="/app/css/cosmostrap.min.css"/>
+  <!-- <link rel="stylesheet" href="/app/css/bootstrap.min.css"/> -->
+  <link rel="stylesheet" href="/app/css/bootstrap-responsive.min.css"/>
+  <link rel="stylesheet" href="/app/css/app.css"/>
+
+</head>
+<body>
+
+  <!-- Add all partials to this page here as part of the build step
+      In order to avoid having to send a GET Request for them later -->
+
+  <div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+      <div>
+        
+        <a href="/" class="brand">onTime</a>
+        <ul class="nav">
+          <li><a href="/">Dashboard</a></li>
+          <li><a href="/settings">Settings</a></li>
+          <li><a href="/help">Help</a></li>
+        </ul>
+        <ul class="nav pull-right">
+          <li><a href="/profile">{{{name}}}</a></li>
+          <li><a onclick="window.location='{{{logout_url}}}';">Logout</a></li>
+        </ul>
+        
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span3 affix" id="sidebar" ng-controller="SidebarCtrl">
+        <ul class="nav nav-list">
+          <li class="nav-header">
+            My Projects 
+            <button class="btn btn-small btn-primary pull-right" ng-click="createNewProject()">New Project</button>
+          </li>
+          <li class="divider"></li>
+          <li class="nav-header clearfix">
+            Search:
+            <input type="text" class="pull-right" ng-model="query">
+            <br>
+          </li>
+          <li class="divider"></li>
+          <li ng-hide="loading.finished" style="text-align:center;">Loading...</li>
+          <li ng-repeat="project in projects | filter:query" class="ng-cloak" ui-animate>
+            <a ng-click="chooseProject(project)" ng-class="{activeproject: isActive(project)}">{{project.title}} 
+              <small class="pull-right">Deadline: {{project.dl}}</small>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="span9" id="content" ng-view></div>
+    </div>
+  </div>
+
+  <div id="timer-bar-hidden">
+    <a class="btn btn-info" onclick="openTimers()"><i class="icon-time icon-white"></i> 0</a>
+  </div>
+  <div id="timer-bar">
+    <a class="btn btn-info pull-right" onclick="closeTimers()"><i class="icon-chevron-down icon-white"></i> Close Timers</a>
+    <div id="timer-inner">
+      <h3>My Timers</h3>
+    </div>
+  </div>
+
+
+  <!-- In production use:
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular.min.js"></script>
+  -->
+  <script src="/app/lib/jquery-1.8.2.min.js"></script>
+  <script src="/app/lib/bootstrap.min.js"></script>
+  <!-- // <script src="/app/lib/d3.min.js"></script> -->
+  <!-- // <script src="/app/lib/moment.min.js"></script> -->
+  <script src="/app/lib/angular/angular.min.js"></script>
+  <script src="/app/lib/angular/angular-resource.min.js"></script>
+  <script src="/app/lib/angular-ui.min.js"></script>
+
+  <!-- CONCATENATE AND MINIFY FOR BUILD -->
+  <script src="/app/js/app.js"></script>
+  <script src="/app/js/services.js"></script>
+  <script src="/app/js/controllers/sidebar.js"></script>
+  <script src="/app/js/controllers/project.js"></script>
+  <script src="/app/js/controllers/profile.js"></script>
+  <script src="/app/js/controllers/help.js"></script>
+  <script src="/app/js/controllers/settings.js"></script>
+  <script src="/app/js/controllers/controller1.js"></script>
+  <script src="/app/js/controllers/createproject.js"></script>
+  <script src="/app/js/filters.js"></script>
+  <script src="/app/js/directives.js"></script>
+  <script>
+      function openTimers(){
+        // $('#timer-bar').css('bottom','0px'); 
+        $('#timer-bar').addClass('up');
+      }
+      function closeTimers(){
+        $('#timer-bar').removeClass('up');
+        // $('#timer-bar').css('bottom','-300px'); 
+      }
+  </script>
+  <!-- END CONCATENATE -->
+
+
+</body>
+</html>
