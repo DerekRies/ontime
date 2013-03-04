@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<project name="onTime">
+
+
+    
+    <!-- Setup some basic reusable properties -->
+    <target name="-load.properties">
+        <property name="build.dir" value="app/build"/>
+        <property name="build.htmldir" value="templates/build"/>
+        <!--Build version information -->
+        <property name="build.major" value="1"/>
+        <property name="build.minor" value="1"/>
+        <echo>Load Properties Complete</echo>
+    </target>
+
+
+
+
+    <!-- Reset Build Directory -->
+    <target name="-init" depends="-load.properties"
+        description="To record some of the information of the build step">
+        
+        <tstamp>
+            <format property="TODAY" pattern="EEE, d MMM yyyy HH:mm:ss Z"/>
+        </tstamp>
+
+        <delete dir="${build.dir}"/>
+        <mkdir dir="${build.dir}"/>
+
+        <delete dir="${build.htmldir}"/>
+        <mkdir dir="${build.htmldir}"/>
+
+        <echo file="${build.dir}/tstamp.txt">Build Date: ${TODAY}&#xa;Build Version: ${build.major}.${build.minor}</echo>
+        <echo>Init Complete</echo>
+    </target>
+
+
+
+    <!-- Concatenate Javascript files -->
+    <target name="-js.concatenate" depends="-init">
+        
+        <concat destfile="${build.dir}/app.js">
+            <filelist dir="app/js">
+                
+            </filelist>
+        </concat>
+        <echo>Javascript Concatenation Complete</echo>
+    </target>
+
+    <!--Build-->
+    <target name="prod" 
+        description="Builds project files for production use"
+        depends="
+            -load.properties, 
+            -init">
+    </target>
+
+
+</project>
