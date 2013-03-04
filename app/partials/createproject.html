@@ -22,20 +22,20 @@
       <div class="control-group">
         <label class="control-label" for="inputProjectDescription">Project Description:</label>
         <div class="controls">
-          <textarea name="" style="width:400px;" id="inputProjectDescription" rows="10" ng-model="projectDescription"></textarea>
+          <textarea name="" style="width:400px;" id="inputProjectDescription" rows="10" ng-model="projectDescription" placeholder="optional"></textarea>
         </div>
       </div>
 
       <div class="control-group">
         <div class="controls">
           <label class="checkbox">
-            <input type="checkbox" checked> Publicly Viewable
+            <input type="checkbox" ng-model="settings.viewable"> Publicly Viewable <small>(Anyone with the link can view this project)</small>
           </label>
           <label class="checkbox">
-            <input type="checkbox"> Publicly Editable
+            <input type="checkbox" ng-model="settings.editable"> Publicly Editable <small>(Anyone with the link can edit this project and its tasks)</small>
           </label>
           <br>
-          <button type="button" class="btn btn-primary btn-large" ng-click="createProject()">Create!</button>
+          <button type="button" class="btn btn-primary btn-large" ng-click="createProject()" ng-disabled="create.loading">{{create.text}}</button>
           <button type="button" class="btn btn-default btn-large" ng-click="resetForm()">Reset</button>
         </div>
       </div>

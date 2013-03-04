@@ -5,22 +5,25 @@ function SidebarCtrl( $scope, $location, $timeout, Project ) {
     // Handles all the logic for the sidebar on every single page
     // that displays the projects available to the user
 
+    $scope.$on('projectAdded', function(e,args){
+        console.log("side bar got the event");
+        var newproject = {"name":args.name};
+        $scope.projects.push(newproject);
+        $timeout(function(){
+            $scope.chooseProject(newproject);
+        },500);
+    });
+
     $scope.loadProjects = function(){
         $scope.loading = {
             finished: true
         }
 
-        $scope.projects = [
-            {title: "Project One", dl: "15 hours" },
-            {title: "Project Two", dl: "15 hours" },
-            {title: "Project Three", dl: "13 hours" },
-            {title: "Project Four", dl: "19 hours" },
-            {title: "Project Five", dl: "28 hours" },
-            {title: "Project Six", dl: "1 hours" }
-        ];
+        $scope.projects = [];
 
         Project.getAll(function(data){
             console.log(data);
+            $scope.projects = data;
         });
 
         $scope.activeProject;
@@ -28,7 +31,7 @@ function SidebarCtrl( $scope, $location, $timeout, Project ) {
 
     $scope.chooseProject = function(project){
         $scope.activeProject = project;
-        $location.path('/project/' + project.title);
+        $location.path('/project/' + project.name);
     };
 
     $scope.isActive = function(project){
@@ -44,6 +47,13 @@ function SidebarCtrl( $scope, $location, $timeout, Project ) {
 
         $scope.activeProject == undefined;
         $location.path('/create');
+        // var name = prompt("What would you like to name this project?");
+        // if(name){
+        //     $scope.projects.push({"name":name,"dl":"none"});
+        //     $timeout(function(){
+        //         $location.path('project/' + name);
+        //     }, 500);
+        // }
     };
 
     $scope.loadProjects();

@@ -40,4 +40,13 @@ angular.module('myApp', ['myApp.filters', 'myApp.services', 'myApp.directives', 
     });
 
     $routeProvider.otherwise({redirectTo: '/'});
-  }]);
+
+  }]).run( function($rootScope){
+
+    console.log("Rootscope running");
+
+    $rootScope.$on('projectAddedEmit', function(e, args){
+        $rootScope.$broadcast('projectAdded', args);
+    });
+
+  });

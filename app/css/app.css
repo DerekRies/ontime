@@ -115,13 +115,17 @@ blockquote > blockquote > blockquote {
 
 div[cool-fade] {
     opacity: 0;
-    -webkit-transform: translateZ( 0 );
+    -webkit-transform: translateZ(0);
+    -moz-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    -o-transform: translateZ(0);
+    transform: translateZ(0);
 
-    -webkit-transition: all 350ms cubic-bezier(0.445, 0.050, 0.550, 0.950); 
-   -moz-transition: all 350ms cubic-bezier(0.445, 0.050, 0.550, 0.950); 
-    -ms-transition: all 350ms cubic-bezier(0.445, 0.050, 0.550, 0.950); 
-     -o-transition: all 350ms cubic-bezier(0.445, 0.050, 0.550, 0.950); 
-        transition: all 350ms cubic-bezier(0.445, 0.050, 0.550, 0.950); /* easeInOutSine */
+    -webkit-transition: all 500ms cubic-bezier(0.445, 0.050, 0.550, 0.950); 
+   -moz-transition: all 500ms cubic-bezier(0.445, 0.050, 0.550, 0.950); 
+    -ms-transition: all 500ms cubic-bezier(0.445, 0.050, 0.550, 0.950); 
+     -o-transition: all 500ms cubic-bezier(0.445, 0.050, 0.550, 0.950); 
+        transition: all 500ms cubic-bezier(0.445, 0.050, 0.550, 0.950); /* easeInOutSine */
 
 -webkit-transition-timing-function: cubic-bezier(0.445, 0.050, 0.550, 0.950); 
    -moz-transition-timing-function: cubic-bezier(0.445, 0.050, 0.550, 0.950); 
@@ -132,7 +136,11 @@ div[cool-fade] {
 
 div[cool-fade].in {
     opacity:1;
-    -webkit-transform: translateZ( 0 );
+    -webkit-transform: translateZ(0);
+    -moz-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    -o-transform: translateZ(0);
+    transform: translateZ(0);
 }
 
 body,html {

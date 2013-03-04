@@ -15,6 +15,16 @@ from google.appengine.api import users
 def makeJson(ndb_entities):
     return json.dumps([t.to_dict() for t in ndb_entities])
 
+def projectsJSON(projects):
+    output = []
+    for project in projects:
+        k = project.key.urlsafe()
+        project = project.to_dict()
+        project["date"] = str(project["date"])
+        project["key"] = k
+        output.append(project)
+    return json.dumps(output)
+
 
 class ProjectsEndpoint(BaseHandler):
     """
@@ -25,33 +35,56 @@ class ProjectsEndpoint(BaseHandler):
     POST -> Creates a new Tracker with post data
     PUT -> Bulk update all projects
     DELETE -> Delete all projects
-
-    Permissions:
-    Users can only access projects that belong to them
     
     """
-    def get(self):
+    def get(self): # Get All Projects
         self.response.headers['Content-Type'] = 'application/json'
         user = users.get_current_user()
         if user:
-            self.write("good")
+            ancestor_key = ndb.Key("Account",user.user_id())
+            projects = Project.query_projects(ancestor_key)
+            self.write(projectsJSON(projects))
         else:
             self.abort(403)
 
-    def post(self): # Creating a new Tracker
-        # time.sleep(.5)
+    def post(self): # Creating a new Project
         user = users.get_current_user()
 
         if user:
-            self.write(self.request.POST)
+            name = self.request.get('name')
+            description = self.request.get('description')
+            tags = self.request.get_all('tags[]')
+            viewable = self.request.get('viewable')
+            viewable = True if viewable == 'true' else False
+            editable = self.request.get('editable')
+            logging.info(editable)
+            editable = True if editable == 'true' else False
+            logging.info(editable)
+
+            project = Project(parent=ndb.Key("Account", user.user_id()))
+
+            project.populate(name=name,
+                             description = description,
+                             tags = tags,
+                             user_id = user.user_id(),
+                             founder = user.nickname(),
+                             public_viewing = viewable,
+                             public_editing = editable)
+
+            key = project.put()
+
+            self.write(key.urlsafe())
+
         else:
             self.abort(403)
 
-    def put(self):
-        self.write("PUT Trackers")
+    def put(self): # Batch Update Projects
+        self.write("PUT Projects")
 
     def delete(self):
-        self.write("DELETE Trackers")
+        self.write("DELETE Projects")
+
+
 
 class ProjectEndpoint(BaseHandler):
     """
@@ -76,7 +109,7 @@ class ProjectEndpoint(BaseHandler):
             self.write("no user mate, fuck off")
 
     def post(self, id):
-        self.write("There is no POST for a single Tracker")
+        self.write("There is no POST for a single Project")
 
     def put(self, id):
         # only updating incognito mode for now
@@ -99,6 +132,9 @@ class ProjectEndpoint(BaseHandler):
 
 
 # Models
+class Account(ndb.Model):
+    display_name = ndb.StringProperty()
+
 
 class Project(ndb.Model):
     name = ndb.StringProperty(required=True)
@@ -110,6 +146,7 @@ class Project(ndb.Model):
     complete = ndb.BooleanProperty(default=False)
     public_viewing = ndb.BooleanProperty(default=True)
     public_editing = ndb.BooleanProperty(default=False)
+    user_id = ndb.StringProperty(required=True)
 
     @classmethod
     def query_projects(cls,ancestor_key):

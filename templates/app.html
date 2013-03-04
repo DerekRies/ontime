@@ -69,8 +69,8 @@
           <li class="divider"></li>
           <li ng-hide="loading.finished" style="text-align:center;">Loading...</li>
           <li ng-repeat="project in projects | filter:query" class="ng-cloak" ui-animate>
-            <a ng-click="chooseProject(project)" ng-class="{activeproject: isActive(project)}">{{project.title}} 
-              <small class="pull-right">Deadline: {{project.dl}}</small>
+            <a ng-click="chooseProject(project)" ng-class="{activeproject: isActive(project)}">{{project.name | inflector:humanize }} 
+              <small ng-show="project.deadline" class="pull-right">Deadline: {{project.deadline}}</small>
             </a>
           </li>
         </ul>

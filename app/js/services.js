@@ -3,7 +3,7 @@
 /* Services */
 
 angular.module('myApp.services', ['ngResource']).
-  factory('Project', function($http, $location){
+  factory('Project', function( $http, $location ){
     $http.defaults.headers.post["Content-Type"] = "application/x-www-form-urlencoded";
     $http.defaults.headers.put["Content-Type"] = "application/x-www-form-urlencoded";
 
