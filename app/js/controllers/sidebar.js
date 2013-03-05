@@ -26,7 +26,7 @@ function SidebarCtrl( $scope, $location, $timeout, Project ) {
             $scope.projects = data;
         });
 
-        $scope.activeProject;
+        $scope.activeProject = undefined;
     };
 
     $scope.chooseProject = function(project){
@@ -44,8 +44,7 @@ function SidebarCtrl( $scope, $location, $timeout, Project ) {
     };
 
     $scope.createNewProject = function(){
-
-        $scope.activeProject == undefined;
+        $scope.activeProject = undefined;
         $location.path('/create');
         // var name = prompt("What would you like to name this project?");
         // if(name){

@@ -10,7 +10,11 @@
         <property name="build.htmldir" value="templates/build"/>
         <!--Build version information -->
         <property name="build.major" value="1"/>
-        <property name="build.minor" value="1"/>
+        <property name="build.minor" value="0"/>
+
+        <property name="src.css.dir" value="app/css"/>
+        <!-- <property name="compilation" value="SIMPLE_OPTIMIZATIONS"/> -->
+        <property name="compilation" value="WHITESPACE_ONLY"/>
         <echo>Load Properties Complete</echo>
     </target>
 
@@ -32,6 +36,10 @@
         <mkdir dir="${build.htmldir}"/>
 
         <echo file="${build.dir}/tstamp.txt">Build Date: ${TODAY}&#xa;Build Version: ${build.major}.${build.minor}</echo>
+
+        <copy file="templates/app.html" todir="${build.htmldir}"/>
+        <copy file="compiler.jar" todir="${build.dir}"/>
+
         <echo>Init Complete</echo>
     </target>
 
@@ -41,11 +49,62 @@
     <target name="-js.concatenate" depends="-init">
         
         <concat destfile="${build.dir}/app.js">
-            <filelist dir="app/js">
-                
-            </filelist>
+            <filelist dir="app/js" files="app.js" />
+            <fileset dir="app/js" includes="*.js" excludes="app.js" />
+            <fileset dir="app/js/controllers" includes="*.js" />
         </concat>
+
+        <replace file="${build.dir}/app.js" token="'use strict';" value=""/>
+
         <echo>Javascript Concatenation Complete</echo>
+    </target>
+
+    
+    <!--Concatenate CSS files-->
+    <target name="-css.concatenate" depends="-init" 
+        description="Concatenates specified CSS files">
+        <concat destfile="${build.dir}/styles.css">
+            <filelist dir="${src.css.dir}">
+                <file name="cosmostrap.min.css"/>
+                <file name="bootstrap-responsive.min.css"/>
+                <file name="app.css"/>
+          </filelist>
+        </concat>
+        <echo>Finished</echo>
+    </target>
+
+
+    <!-- Minify the Single Javascript File -->
+    <target name="-js.minify" depends="-js.concatenate">
+        <exec dir="${build.dir}" executable="java">
+            <arg line="-jar compiler.jar" />
+            <arg line="--compilation_level=${compilation}" />
+            <arg line="--js=app.js" />
+            <arg line="--js_output_file=app.min.js" />
+        </exec>
+    </target>
+
+    <!-- Minify the Single CSS File -->
+    <target name="-css.minify" depends="-css.concatenate">
+        
+    </target>
+
+
+    <!-- Create the build html file -->
+    <target name="-html.replace" depends="-js.concatenate,-css.concatenate">
+        <!-- Replace Old Script Tags With Single Minified File-->
+        <replaceregexp file="${build.htmldir}/app.html" 
+                        match="&lt;!-- CONCATENATE AND MINIFY FOR BUILD --&gt;.+&lt;!-- END CONCATENATE --&gt;"
+                        replace="&lt;script src='/app/build/app.min.js'&gt;&lt;/script&gt;"
+                        flags="s"
+                        />
+
+        <!-- Replace Old CSS Tags With Single Minified File -->
+        <replaceregexp file="${build.htmldir}/app.html" 
+                match="&lt;!-- CONCATENATE AND MINIFY CSS FOR BUILD --&gt;.+&lt;!-- END CONCATENATE --&gt;"
+                replace="&lt;link rel='stylesheet' href='/app/build/styles.css' /&gt;"
+                flags="s"
+                />
     </target>
 
     <!--Build-->
@@ -53,7 +112,11 @@
         description="Builds project files for production use"
         depends="
             -load.properties, 
-            -init">
+            -init,
+            -js.concatenate,
+            -css.concatenate,
+            -js.minify,
+            -html.replace">
     </target>
 
 

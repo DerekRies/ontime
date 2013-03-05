@@ -10,7 +10,7 @@ angular.module('myApp', ['myApp.filters', 'myApp.services', 'myApp.directives', 
 
     $routeProvider.when('/', {
         templateUrl: '/partials/partial1.html', 
-        controller: Ctrl1
+        controller: DashboardCtrl
     });
     // $routeProvider.when('/view2', {templateUrl: 'app/partials/partial2.html', controller: TrackerCtrl});
 
