@@ -70,7 +70,7 @@
           </li>
           <li class="divider"></li>
           <li ng-hide="loading.finished" style="text-align:center;">Loading...</li>
-          <li ng-repeat="project in projects | filter:query" class="ng-cloak" ui-animate>
+          <li ng-repeat="project in projects | filter:query" class="ng-cloak project-item" ui-animate>
             <a ng-click="chooseProject(project)" ng-class="{activeproject: isActive(project)}">{{project.name | inflector:humanize }} 
               <small ng-show="project.deadline" class="pull-right">Deadline: {{project.deadline}}</small>
             </a>
@@ -82,10 +82,10 @@
   </div>
 
   <div id="timer-bar-hidden">
-    <a class="btn btn-info" onclick="openTimers()"><i class="icon-time icon-white"></i> 0</a>
+    <button class="btn btn-info" onclick="openTimers()"><i class="icon-time icon-white"></i> 0</button>
   </div>
   <div id="timer-bar">
-    <a class="btn btn-info pull-right" onclick="closeTimers()"><i class="icon-chevron-down icon-white"></i> Close Timers</a>
+    <button class="btn btn-info pull-right" onclick="closeTimers()"><i class="icon-chevron-down icon-white"></i> Close Timers</button>
     <div id="timer-inner">
       <h3>My Timers</h3>
     </div>
@@ -116,13 +116,25 @@
   <script src="/app/js/filters.js"></script>
   <script src="/app/js/directives.js"></script>
   <script>
+      var TIMER_OPEN = false;
       function openTimers(){
         // $('#timer-bar').css('bottom','0px'); 
         $('#timer-bar').addClass('up');
+        TIMER_OPEN = true;
       }
       function closeTimers(){
         $('#timer-bar').removeClass('up');
         // $('#timer-bar').css('bottom','-300px'); 
+        TIMER_OPEN = false;
+      }
+      function toggleTimers(){
+        TIMER_OPEN = !TIMER_OPEN;
+        if(TIMER_OPEN){
+          openTimers();
+        }
+        else{
+          closeTimers();
+        }
       }
   </script>
   <!-- END CONCATENATE -->

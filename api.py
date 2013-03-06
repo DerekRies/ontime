@@ -72,8 +72,12 @@ class ProjectsEndpoint(BaseHandler):
                              public_editing = editable)
 
             key = project.put()
+            logging.info("CMON QUIT FUCKING DYING HERE YOU BITCH")
+            logging.info(key)
+            keyurl = key.urlsafe()
+            # logging.info(keyurl)
 
-            self.write(key.urlsafe())
+            self.write(keyurl)
 
         else:
             self.abort(403)
@@ -101,10 +105,26 @@ class ProjectEndpoint(BaseHandler):
     
     """
     def get(self, id):
+        # time.sleep(3)
         self.response.headers['Content-Type'] = 'application/json'
         user = users.get_current_user()
         if user:
-            self.write("good")
+            
+            key = ndb.Key(urlsafe=id)
+            project = key.get()
+            if project and project.user_id == user.user_id():
+                project = project.to_dict()
+                project["date"] = str(project["date"])
+                # logs = RequestLog.query_logs(key)
+                # for log in logs:
+                #     log = log.to_dict()
+                #     log["date"] = str(log["date"])
+                #     output.append(log)
+                self.write(json.dumps({"project":project}))
+
+            else:
+                self.abort(404)
+
         else:
             self.write("no user mate, fuck off")
 
@@ -124,9 +144,16 @@ class ProjectEndpoint(BaseHandler):
 
     def delete(self, id):
         # time.sleep(.5)
+        self.response.headers['Content-Type'] = 'application/json'
         user = users.get_current_user()
         if user:
-            self.write("good")
+            key = ndb.Key(urlsafe=id)
+            project = key.get()
+            if project and project.user_id == user.user_id():
+                key.delete()
+                self.write(json.dumps({"status":"success"}))
+            else:
+                self.write(json.dumps({"status":"fail"}))
         else:
             self.write("no user mate, fuck off")
 

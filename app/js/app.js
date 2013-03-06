@@ -14,7 +14,7 @@ angular.module('myApp', ['myApp.filters', 'myApp.services', 'myApp.directives', 
     });
     // $routeProvider.when('/view2', {templateUrl: 'app/partials/partial2.html', controller: TrackerCtrl});
 
-    $routeProvider.when('/project/:name', {
+    $routeProvider.when('/project/:id', {
         templateUrl: '/partials/details.html', 
         controller: ProjectDetailsCtrl
     });
@@ -39,14 +39,22 @@ angular.module('myApp', ['myApp.filters', 'myApp.services', 'myApp.directives', 
         controller: ProfileCtrl
     });
 
+    $routeProvider.when('/ohno', {
+        templateUrl: '/partials/notfound.html'
+    })
+
     $routeProvider.otherwise({redirectTo: '/'});
 
-  }]).run( function($rootScope){
+  }])
+  .run( function($rootScope){
 
-    console.log("Rootscope running");
 
     $rootScope.$on('projectAddedEmit', function(e, args){
         $rootScope.$broadcast('projectAdded', args);
+    });
+
+    $rootScope.$on('projectDeletedEmit', function(e, args){
+        $rootScope.$broadcast('projectDeleted', args);
     });
 
   });

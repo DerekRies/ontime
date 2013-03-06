@@ -64,6 +64,7 @@ app = webapp2.WSGIApplication([
     ('/settings', MainHandler),
     ('/help', MainHandler),
     ('/profile', MainHandler),
+    ('/ohno', MainHandler),
     # SERVER SIDE PAGES
     ('/login', LoginHandler),
     # RESTful API endpoints

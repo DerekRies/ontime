@@ -2,13 +2,17 @@
     <div class="row">
         <div class="span10">
             
-            <h1 class="project-header">{{title | inflector:humanize}}</h1>
-            <p><b>Created By</b>: Derek on March 1st, 2013, 7:45 PM</p>
+            <h2 class="project-header" ng-show="loading">Loading...</h2>
+            <h2 class="project-header">{{project.name | inflector:humanize}}</h2>
+            <p ng-hide="loading"><b>Created By</b>: {{project.founder}} on {{project.date}}</p>
             <p><b>Members</b>: Derek, Carley, Willow, Otto</p>
+            <p><b>Complete:</b> {{project.complete}}</p>
+            <p><b>Publicly Visible:</b> {{project.public_viewing}}</p>
+            <p><b>Publicly Editable:</b> {{project.public_editing}}</p>
             <p>
-                <a href="" class="btn btn-primary">Complete Project</a>
-                <a href="" class="btn btn-info">Add a Member</a>
-                <a href="" class="btn btn-default">Delete Project</a>
+                <a ng-click="recalculateCompletion()" href="" class="btn btn-primary">Complete Project</a>
+                <a href="/ohno" class="btn btn-info">Add a Member</a>
+                <a ng-click="deleteMe()" class="btn btn-default">Delete Project</a>
             </p>
 
         </div>
@@ -24,8 +28,20 @@
     <div class="progress">
       <div class="bar" style="width: {{completion}}%;"></div>
     </div>
-    <p>This project is all about completing the onTime WebApp. So far a good deal of the front end has been written (at a blazing fast speed thanks to Angular.js)</p>
+    <p>{{project.description}}</p>
     <hr>
 
-
+    <ul id="task-list">
+        <li ng-repeat="task in [1,2,3,4,5]"class="task-item">
+            <h3 class="task-title">Task Name</h3>
+            <button class="btn btn-small"><i class="icon-check"></i></button>
+            <div class="inline-timer pull-right">
+                <small>Time Logged:</small>
+                <span class="timer-count">00:00:00</span>
+                <button class="btn btn-small"><i class="icon-play"></i></button>
+                <button class="btn btn-small"><i class="icon-stop"></i></button>
+                <button class="btn btn-small"><i class="icon-remove"></i></button>
+            </div>
+        </li>
+    </ul>
 </div>

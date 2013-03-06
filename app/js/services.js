@@ -9,14 +9,13 @@ angular.module('myApp.services', ['ngResource']).
 
     return {
         get: function(id, callback){
-            console.log("getting Project " + id);
             $http.get('/projects/' + id).success(function(data){
                 if(typeof callback === 'function'){
                     callback(data);
                 }
             }).
             error(function(data){
-                $location.path("/");
+                $location.path("/ohno");
             });
         },
         getAll: function(callback){

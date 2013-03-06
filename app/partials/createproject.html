@@ -8,14 +8,14 @@
       <div class="control-group">
         <label class="control-label" for="inputProjectName">Project Name:</label>
         <div class="controls">
-          <input type="text" style="width:400px;" id="inputProjectName" placeholder="Project Name" autofocus ng-model="projectName">
+          <input type="text" style="width:400px;" id="inputProjectName" placeholder="Project Name" autofocus ng-model="projectName" ui-keydown="{'enter': 'createProject()'}">
         </div>
       </div>
 
       <div class="control-group">
         <label class="control-label" for="inputProjectTags">Project Tags:</label>
         <div class="controls">
-          <input type="text" style="width:400px;" id="inputProjectTags" placeholder="one, two, three" ng-model="projectTags">
+          <input type="text" style="width:400px;" id="inputProjectTags" placeholder="one, two, three" ng-model="projectTags" ng-list ui-keydown="{'enter': 'createProject()'}">
         </div>
       </div>
 
