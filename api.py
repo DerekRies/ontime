@@ -132,15 +132,20 @@ class ProjectEndpoint(BaseHandler):
         self.write("There is no POST for a single Project")
 
     def put(self, id):
-        # only updating incognito mode for now
         self.response.headers['Content-Type'] = 'application/json'
         user = users.get_current_user()
-        time.sleep(1.5)
         if user:
-            self.write("good")
-        else:
-            self.write(json.dumps({"status":"fail"}))
-
+            key = ndb.Key(urlsafe=id)
+            project = key.get()
+            if project and project.user_id == user.user_id():
+                project.name = self.request.get("name")
+                project.description = self.request.get("description")
+                project.tags = self.request.get_all("tags[]")
+                project.put()
+                self.write(json.dumps({"status":"success"}))
+            else:
+                self.write(json.dumps({"status":"fail"}))
+                
 
     def delete(self, id):
         # time.sleep(.5)
@@ -167,7 +172,7 @@ class Project(ndb.Model):
     name = ndb.StringProperty(required=True)
     date = ndb.DateTimeProperty(auto_now_add=True)
     deadline = ndb.DateTimeProperty()
-    description = ndb.StringProperty()
+    description = ndb.TextProperty()
     founder = ndb.StringProperty()
     tags = ndb.StringProperty(repeated=True)
     complete = ndb.BooleanProperty(default=False)

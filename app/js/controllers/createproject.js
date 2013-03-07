@@ -14,6 +14,10 @@ function CreateProjectCtrl( $scope, $location, Project ) {
         'loading': false
     };
 
+    $scope.preview = {
+        enabled: false
+    };
+
 
 
     $scope.validate = function(){

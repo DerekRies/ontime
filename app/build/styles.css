@@ -133,11 +133,11 @@ blockquote > blockquote > blockquote {
 
 div[cool-fade] {
     opacity: 0;
-    -webkit-transform: translateZ(0);
-    -moz-transform: translateZ(0);
-    -ms-transform: translateZ(0);
-    -o-transform: translateZ(0);
-    transform: translateZ(0);
+    -webkit-transform: translate3d(0, 0, 0);
+    -moz-transform: translate3d(0, 0, 0);
+    -ms-transform: translate3d(0, 0, 0);
+    -o-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
 
     -webkit-transition: all 500ms cubic-bezier(0.445, 0.050, 0.550, 0.950); 
    -moz-transition: all 500ms cubic-bezier(0.445, 0.050, 0.550, 0.950); 
@@ -154,15 +154,16 @@ div[cool-fade] {
 
 div[cool-fade].in {
     opacity:1;
-    -webkit-transform: translateZ(0);
-    -moz-transform: translateZ(0);
-    -ms-transform: translateZ(0);
-    -o-transform: translateZ(0);
-    transform: translateZ(0);
+    -webkit-transform: translate3d(0, 0, 0);
+    -moz-transform: translate3d(0, 0, 0);
+    -ms-transform: translate3d(0, 0, 0);
+    -o-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
 }
 
 body,html {
     height:100%;
+    overflow-x:hidden;
 }
 
 .navbar .brand {
@@ -214,18 +215,12 @@ body,html {
     margin-bottom:20px;
 }
 
-.progress > .bar {
-    -webkit-transition: all 1250ms cubic-bezier(0.445, 0.050, 0.550, 0.950); 
-   -moz-transition: all 1250ms cubic-bezier(0.445, 0.050, 0.550, 0.950); 
-    -ms-transition: all 1250ms cubic-bezier(0.445, 0.050, 0.550, 0.950); 
-     -o-transition: all 1250ms cubic-bezier(0.445, 0.050, 0.550, 0.950); 
-        transition: all 1250ms cubic-bezier(0.445, 0.050, 0.550, 0.950); /* easeInOutSine */
-
--webkit-transition-timing-function: cubic-bezier(0.445, 0.050, 0.550, 0.950); 
-   -moz-transition-timing-function: cubic-bezier(0.445, 0.050, 0.550, 0.950); 
-    -ms-transition-timing-function: cubic-bezier(0.445, 0.050, 0.550, 0.950); 
-     -o-transition-timing-function: cubic-bezier(0.445, 0.050, 0.550, 0.950); 
-        transition-timing-function: cubic-bezier(0.445, 0.050, 0.550, 0.950); /* easeInOutSine */
+.progress .bar {
+    -webkit-transition: all .3s ease; 
+   -moz-transition: all .3s ease; 
+    -ms-transition: all .3s ease; 
+     -o-transition: all .3s ease; 
+        transition: all .3s ease; /* easeInOutSine */
 }
 
 /*  END APPLICATION GLOBAL STYLES  */
@@ -242,23 +237,24 @@ body,html {
     padding-top:60px;
 }
 
-.nav-list>li {
+.project-item {
   transition: all 0.5s ease;
   -o-transition: all 0.5s ease;
   -moz-transition: all 0.5s ease;
   -webkit-transition: all 0.5s ease;
 }
+
+
 /* The 'hidden' state to transition from & to */
 
 
-.nav-list>li.ui-animate {
+.project-item.ui-animate {
   opacity: 0;
-  background:#007FFF;
-  color:#FFF;
-  -webkit-transform: scale3d( 0.1, 0.1, 0.1 );
-
+  /*background:#007FFF;*/
+  /*color:#FFF;*/
+  /*-webkit-transform: scale3d( 0.1, 0.1, 0.1 );*/
+  -webkit-transform: translate3d( 50px, 0px, 0px );
 }
-
 
 .nav-list>li>a {
     padding:10px 15px;
@@ -284,7 +280,7 @@ body,html {
     z-index: 10;
 }
 
-#timer-bar-hidden a, #timer-bar a {
+#timer-bar-hidden button, #timer-bar button {
     background:#673C7C;
 }
 
@@ -332,4 +328,151 @@ body,html {
     color:#FFF;
 }
 
-/* END TIMER MODULE STYLES ========
+/* END TIMER MODULE STYLES ========*/
+
+
+
+.desc-preview {
+  width:600px;
+}
+
+.input-project-edit {
+  width:500px;
+}
+
+.badge {
+  margin:0 2px;
+}
+
+#tasks-header {
+  margin:0;
+}
+
+#task-list {
+  list-style-type:none;
+  margin: 0;
+  padding-bottom:50px;
+}
+
+.task-item {
+  background:#EEE;
+  padding:10px;
+  height:60px;
+  margin:10px 0;
+  transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -webkit-transition: all 0.5s ease;
+}
+
+/* The delays create a slightly better looking effect
+  so everything doesn't slide in all at once. Unfortunately
+  this isn't an ideal solution as these all have to be typed
+  and there isn't any dynamic means of accomplishing it.
+
+  For example say there's more than 5 elements. Then we don't
+  have enough nth-child's to delay that n > 5 element.
+
+  Also these delays dont just apply when tasks animate in,
+  but also when trying to complete and delete them. So when
+  you do either of those actions you have to wait for the 
+  delay matching that nth-child element...not good.
+
+  A solution might be to make a new directive like ui-animate
+  that applies a dynamic delay to the animate in, depending on
+  how many elements are currently being animated 
+  (e.g. in the beginning they all animate in and get appropriate
+  delays. However when just adding, completing, or deleting a 
+  task no delay is applied because there is only one element
+  being animated. This will definitely be a TODO.)
+*/
+
+/*.task-item:nth-child(5) {
+  transition-delay: .5s;
+  -o-transition-delay: .5s;
+  -moz-transition-delay: .5s;
+  -webkit-transition-delay: .5s;
+}
+
+.task-item:nth-child(4) {
+  transition-delay: .4s;
+  -o-transition-delay: .4s;
+  -moz-transition-delay: .4s;
+  -webkit-transition-delay: .4s;
+}
+
+.task-item:nth-child(3) {
+  transition-delay: .3s;
+  -o-transition-delay: .3s;
+  -moz-transition-delay: .3s;
+  -webkit-transition-delay: .3s;
+}
+
+.task-item:nth-child(2) {
+  transition-delay: .2s;
+  -o-transition-delay: .2s;
+  -moz-transition-delay: .2s;
+  -webkit-transition-delay: .2s;
+}
+
+.task-item:nth-child(1) {
+  transition-delay: .1s;
+  -o-transition-delay: .1s;
+  -moz-transition-delay: .1s;
+  -webkit-transition-delay: .1s;
+}*/
+
+.task-title {
+  margin-bottom:5px;
+  position:relative;
+  top:-5px;
+}
+
+.inline-timer {
+
+}
+
+.inline-timer .timer-count {
+  font-size:26px;
+  display:inline-block;
+  text-align: center;
+  color:#000;
+  margin:5px 0 10px 0;
+}
+
+
+
+
+
+/* TASK ANIMATION STYLES ==========*/
+
+.task-item.ui-animate {
+  opacity: 0;
+  /*background:#007FFF;*/
+  /*color:#FFF;*/
+  /*-webkit-transform: scale3d( 0.1, 0.1, 0.1 );*/
+  -webkit-transform: translate3d( 50px, 0px, 0px );
+}
+
+.task-item.to-complete {
+  opacity: 0;
+  background:#B4D455;
+  -webkit-transform: translate3d( 225px, 0px, 0px );
+  transition: all 1s ease;
+  -o-transition: all 1s ease;
+  -moz-transition: all 1s ease;
+  -webkit-transition: all 1s ease;
+}
+
+
+
+/* END TASK ANIMATION STYLES ======*/
+
+
+
+
+/* TURN TRANSITIONS OFF STYLES ====*/
+
+
+
+/* END TURN TRANSITIONS OFF STYLES */

@@ -145,6 +145,7 @@ div[cool-fade].in {
 
 body,html {
     height:100%;
+    overflow-x:hidden;
 }
 
 .navbar .brand {
@@ -224,6 +225,8 @@ body,html {
   -moz-transition: all 0.5s ease;
   -webkit-transition: all 0.5s ease;
 }
+
+
 /* The 'hidden' state to transition from & to */
 
 
@@ -311,21 +314,100 @@ body,html {
 
 
 
+.desc-preview {
+  width:600px;
+}
+
+.input-project-edit {
+  width:500px;
+}
+
+.badge {
+  margin:0 2px;
+}
+
+#tasks-header {
+  margin:0;
+}
 
 #task-list {
   list-style-type:none;
   margin: 0;
+  padding-bottom:50px;
 }
 
 .task-item {
   background:#EEE;
   padding:10px;
-  height:80px;
+  height:60px;
   margin:10px 0;
+  transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -webkit-transition: all 0.5s ease;
 }
 
+/* The delays create a slightly better looking effect
+  so everything doesn't slide in all at once. Unfortunately
+  this isn't an ideal solution as these all have to be typed
+  and there isn't any dynamic means of accomplishing it.
+
+  For example say there's more than 5 elements. Then we don't
+  have enough nth-child's to delay that n > 5 element.
+
+  Also these delays dont just apply when tasks animate in,
+  but also when trying to complete and delete them. So when
+  you do either of those actions you have to wait for the 
+  delay matching that nth-child element...not good.
+
+  A solution might be to make a new directive like ui-animate
+  that applies a dynamic delay to the animate in, depending on
+  how many elements are currently being animated 
+  (e.g. in the beginning they all animate in and get appropriate
+  delays. However when just adding, completing, or deleting a 
+  task no delay is applied because there is only one element
+  being animated. This will definitely be a TODO.)
+*/
+
+/*.task-item:nth-child(5) {
+  transition-delay: .5s;
+  -o-transition-delay: .5s;
+  -moz-transition-delay: .5s;
+  -webkit-transition-delay: .5s;
+}
+
+.task-item:nth-child(4) {
+  transition-delay: .4s;
+  -o-transition-delay: .4s;
+  -moz-transition-delay: .4s;
+  -webkit-transition-delay: .4s;
+}
+
+.task-item:nth-child(3) {
+  transition-delay: .3s;
+  -o-transition-delay: .3s;
+  -moz-transition-delay: .3s;
+  -webkit-transition-delay: .3s;
+}
+
+.task-item:nth-child(2) {
+  transition-delay: .2s;
+  -o-transition-delay: .2s;
+  -moz-transition-delay: .2s;
+  -webkit-transition-delay: .2s;
+}
+
+.task-item:nth-child(1) {
+  transition-delay: .1s;
+  -o-transition-delay: .1s;
+  -moz-transition-delay: .1s;
+  -webkit-transition-delay: .1s;
+}*/
+
 .task-title {
-  float:left;
+  margin-bottom:5px;
+  position:relative;
+  top:-5px;
 }
 
 .inline-timer {
@@ -334,22 +416,45 @@ body,html {
 
 .inline-timer .timer-count {
   font-size:26px;
-  display:block;
+  display:inline-block;
   text-align: center;
   color:#000;
   margin:5px 0 10px 0;
 }
 
+
+
+
+
 /* TASK ANIMATION STYLES ==========*/
 
-.task {
-
+.task-item.ui-animate {
+  opacity: 0;
+  /*background:#007FFF;*/
+  /*color:#FFF;*/
+  /*-webkit-transform: scale3d( 0.1, 0.1, 0.1 );*/
+  -webkit-transform: translate3d( 50px, 0px, 0px );
 }
 
-.task.to-delete {}
-
-.task.to-complete {}
+.task-item.to-complete {
+  opacity: 0;
+  background:#B4D455;
+  -webkit-transform: translate3d( 225px, 0px, 0px );
+  transition: all 1s ease;
+  -o-transition: all 1s ease;
+  -moz-transition: all 1s ease;
+  -webkit-transition: all 1s ease;
+}
 
 
 
 /* END TASK ANIMATION STYLES ======*/
+
+
+
+
+/* TURN TRANSITIONS OFF STYLES ====*/
+
+
+
+/* END TURN TRANSITIONS OFF STYLES */

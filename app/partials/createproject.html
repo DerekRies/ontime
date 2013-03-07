@@ -3,7 +3,9 @@
     <p>You are creating a new project on this page... how does it feel?</p>
     <hr>
 
-    <form class="form-horizontal">
+    <div>
+
+      <form class="form-horizontal">
 
       <div class="control-group">
         <label class="control-label" for="inputProjectName">Project Name:</label>
@@ -19,12 +21,20 @@
         </div>
       </div>
 
-      <div class="control-group">
+      <div class="control-group" ng-hide="preview.enabled">
         <label class="control-label" for="inputProjectDescription">Project Description:</label>
         <div class="controls">
           <textarea name="" style="width:400px;" id="inputProjectDescription" rows="10" ng-model="projectDescription" placeholder="optional"></textarea>
         </div>
       </div>
+
+      <div class="desc-preview" ng-show="preview.enabled">
+        <hr>
+        <b>Preview:</b>
+        <markdown ng-model="projectDescription"></markdown>
+        <hr>
+      </div>
+
 
       <div class="control-group">
         <div class="controls">
@@ -37,8 +47,25 @@
           <br>
           <button type="button" class="btn btn-primary btn-large" ng-click="createProject()" ng-disabled="create.loading">{{create.text}}</button>
           <button type="button" class="btn btn-default btn-large" ng-click="resetForm()">Reset</button>
+          <button type="button" class="btn btn-large btn-default" ng-click="preview.enabled = !preview.enabled">Preview</button>
         </div>
       </div>
     </form>
+
+      
+    </div>
+    
+<!--     <div id="create-preview" ng-show="preview.enabled">
+      <h3>{{projectName | inflector:humanize}}</h3>
+      <p>
+        <b>Tags:</b>
+        <span class="badge badge-info" ng-repeat="tag in projectTags">{{tag}}</span>
+      </p>
+
+      <p>{{projectDescription}}</p>
+
+      <button type="button" class="btn btn-primary btn-large" ng-click="createProject()" ng-disabled="create.loading">{{create.text}}</button>
+      <button type="button" class="btn btn-default btn-large" ng-click="preview.enabled=false">Close Preview</button>
+    </div> -->
 
 </div>

@@ -3,7 +3,8 @@
 
 // Declare app level module which depends on filters, and services
 
-angular.module('myApp', ['myApp.filters', 'myApp.services', 'myApp.directives', 'ui']).
+angular.module('myApp', 
+    ['myApp.filters', 'myApp.services', 'myApp.directives', 'ui']).
   config(['$routeProvider','$locationProvider', function($routeProvider, $locationProvider) {
 
     $locationProvider.html5Mode(true).hashPrefix('!');
@@ -14,7 +15,7 @@ angular.module('myApp', ['myApp.filters', 'myApp.services', 'myApp.directives', 
     });
     // $routeProvider.when('/view2', {templateUrl: 'app/partials/partial2.html', controller: TrackerCtrl});
 
-    $routeProvider.when('/project/:name', {
+    $routeProvider.when('/project/:id', {
         templateUrl: '/partials/details.html', 
         controller: ProjectDetailsCtrl
     });
@@ -39,14 +40,22 @@ angular.module('myApp', ['myApp.filters', 'myApp.services', 'myApp.directives', 
         controller: ProfileCtrl
     });
 
+    $routeProvider.when('/ohno', {
+        templateUrl: '/partials/notfound.html'
+    })
+
     $routeProvider.otherwise({redirectTo: '/'});
 
-  }]).run( function($rootScope){
+  }])
+  .run( function($rootScope){
 
-    console.log("Rootscope running");
 
     $rootScope.$on('projectAddedEmit', function(e, args){
         $rootScope.$broadcast('projectAdded', args);
+    });
+
+    $rootScope.$on('projectDeletedEmit', function(e, args){
+        $rootScope.$broadcast('projectDeleted', args);
     });
 
   });
@@ -74,8 +83,28 @@ angular.module('myApp.directives', []).
       }
 
     }
-});
-
+})
+  .directive('markdown', function(){
+      var converter = new Showdown.converter();
+      var link = function(scope, element, attrs, model) {
+        
+          var render = function(){     
+              if(model.$modelValue){
+                var htmlText = converter.makeHtml(model.$modelValue);
+                element.html(htmlText);
+              } 
+          };
+          scope.$watch(attrs['ngModel'], render);
+          if(isNaN(model.$modelValue) === false){
+            render();
+          }
+      };
+      return {
+          restrict: 'E',
+          require: 'ngModel',
+          link: link
+      }
+  });
 
 /* Filters */
 
@@ -96,14 +125,13 @@ angular.module('myApp.services', ['ngResource']).
 
     return {
         get: function(id, callback){
-            console.log("getting Project " + id);
             $http.get('/projects/' + id).success(function(data){
                 if(typeof callback === 'function'){
                     callback(data);
                 }
             }).
             error(function(data){
-                $location.path("/");
+                $location.path("/ohno");
             });
         },
         getAll: function(callback){
@@ -152,18 +180,31 @@ angular.module('myApp.services', ['ngResource']).
         }
     };
   });
+var TIMER_OPEN = false;
 function openTimers(){
-    // $('#timer-bar').css('bottom','0px'); 
-    $('#timer-bar').addClass('up');
+// $('#timer-bar').css('bottom','0px'); 
+$('#timer-bar').addClass('up');
+TIMER_OPEN = true;
 }
-
 function closeTimers(){
-    $('#timer-bar').removeClass('up');
-    // $('#timer-bar').css('bottom','-300px'); 
+$('#timer-bar').removeClass('up');
+// $('#timer-bar').css('bottom','-300px'); 
+TIMER_OPEN = false;
+}
+function toggleTimers(){
+TIMER_OPEN = !TIMER_OPEN;
+if(TIMER_OPEN){
+openTimers();
+}
+else{
+closeTimers();
+}
 }
 
 
 function CreateProjectCtrl( $scope, $location, Project ) {
+
+    document.title = "Create Project | onTime";
 
     $scope.settings = {
         viewable: true,
@@ -173,43 +214,13 @@ function CreateProjectCtrl( $scope, $location, Project ) {
     $scope.create = {
         'text': 'Create!',
         'loading': false
-    }
-
-    $scope.createProject = function(){
-        if($scope.validate()){
-
-            $scope.createLoad();
-            var tags = '';
-
-            if($scope.projectTags){
-                tags = $scope.projectTags.replace(/\ +/g," "); // remove multiple spaces
-                tags = tags.replace(/\,\ */g,","); // remove spaces between tags
-                tags = tags.split(',');
-
-            }
-
-            var newproject = {
-                'name':        $scope.projectName, 
-                'description': $scope.projectDescription,
-                'tags':        tags,
-                'viewable':    $scope.settings.viewable,
-                'editable':    $scope.settings.editable
-            };
-
-            console.log(tags);
-            Project.create(newproject, function(data){
-                $scope.resetForm();
-                $scope.createFinish();
-                newproject['key'] = data;
-                $scope.$emit('projectAddedEmit', newproject);
-            });
-            
-
-        }
-        else{
-
-        }
     };
+
+    $scope.preview = {
+        enabled: false
+    };
+
+
 
     $scope.validate = function(){
         if($scope.projectName === undefined || $scope.projectName === ''){
@@ -240,49 +251,156 @@ function CreateProjectCtrl( $scope, $location, Project ) {
         };
     };
 
+    $scope.createProject = function(){
+        if($scope.validate()){
+
+            $scope.createLoad();
+
+            var newproject = {
+                'name':        $scope.projectName, 
+                'description': $scope.projectDescription,
+                'tags':        $scope.projectTags,
+                'viewable':    $scope.settings.viewable,
+                'editable':    $scope.settings.editable
+            };
+
+            console.log($scope.projectTags)
+            Project.create(newproject, function(data){
+                $scope.resetForm();
+                $scope.createFinish();
+                newproject['key'] = data;
+                $scope.$emit('projectAddedEmit', newproject);
+            });
+            
+
+        }
+        else{
+
+        }
+    };
+
+    
+
 }
 
 CreateProjectCtrl.$inject = ['$scope', '$location' ,'Project'];
 
 function DashboardCtrl( $scope ) {
-
+    document.title = "Dashboard | onTime";
 }
 
 DashboardCtrl.$inject = ['$scope'];
 
 function HelpCtrl( $scope ) {
-
+    document.title = "Help | onTime";
 }
 
 HelpCtrl.$inject = ['$scope'];
 
 function ProfileCtrl( $scope, $route, $routeParams ) {
-    
+    document.title = "My Profile | onTime";
 }
 
 ProfileCtrl.$inject = ['$scope','$route', '$routeParams'];
 
-function ProjectDetailsCtrl( $scope, $route, $routeParams, $timeout, Project ) {
+function ProjectDetailsCtrl($scope, 
+                            $route, 
+                            $routeParams, 
+                            $timeout, 
+                            Project, 
+                            $filter, 
+                            $location 
+) {
+
     $scope.completion = 0;
-    if($routeParams.name === undefined){
-        $scope.title = "All Projects";
-    }
-    else{
-        $scope.title = $routeParams.name;
-        document.title = "onTime - " + $scope.title;
+    $scope.project = {};
+    $scope.projectClean = {};
+
+    $scope.state = {
+        loading: true,
+        editing: false,
+        creating: false
     }
 
-    $timeout(function(){
+    $('.tooltips').tooltip({
+        placement:"bottom",
+        delay: { show: 500 },
+        animation:false
+    });
+
+    Project.get($routeParams.id, function(data){
+        document.title = $filter('inflector')(data.project.name) + " | onTime";
+        $scope.project = data.project;
+        angular.copy($scope.project, $scope.projectClean);
+        $scope.state.loading = false;
+        $timeout(function(){
+            $scope.completion = Math.ceil(Math.random() * 100);
+        },350);
+    });
+
+    $scope.deleteMe = function(){
+        if(confirm("Are you sure you want to delete this project?")){
+            Project.remove($routeParams.id, function(data){
+                $scope.$emit('projectDeletedEmit', {id: $routeParams.id});
+            });
+        }
+    };
+
+    $scope.startEdits = function(){
+        $scope.state.editing = true;
+    };
+
+    $scope.saveEdits = function(){
+        $scope.state.editing = false;
+        console.log($scope.project.name);
+
+        if($scope.project.name !== $scope.projectClean.name){
+            $scope.$emit('projectNameChangeEmit', 
+                {id: $routeParams.id, name: $scope.project.name});
+        }
+
+
+        // only send a request to edit if the data has changed
+        angular.copy($scope.project, $scope.projectClean);
+        Project.edit($routeParams.id, $scope.project, function(data){
+            console.log(data);
+        });
+    };
+
+    $scope.resetEdits = function(){
+        angular.copy($scope.projectClean, $scope.project);
+        $scope.state.editing = false;
+    };
+
+    $scope.recalculateCompletion = function(){
         $scope.completion = Math.ceil(Math.random() * 100);
-    },500);
+    };
+
+    $scope.completeTask = function(task){
+        console.log(task);
+        $('.task-item').eq(task).addClass('to-complete');
+    };
+
+    $scope.deleteTask = function(task){
+        console.log(task);
+        $('.task-item').eq(task).addClass('ui-animate');
+    };
 
 
 }
 
-ProjectDetailsCtrl.$inject = ['$scope','$route', '$routeParams', '$timeout', 'Project'];
+ProjectDetailsCtrl.$inject = [
+    '$scope',
+    '$route', 
+    '$routeParams', 
+    '$timeout', 
+    'Project', 
+    '$filter', 
+    '$location' 
+];
 
 function SettingsCtrl( $scope ) {
-
+    document.title = "Settings | onTime";
 }
 
 SettingsCtrl.$inject = ['$scope'];
@@ -292,13 +410,45 @@ function SidebarCtrl( $scope, $location, $timeout, Project ) {
     // Handles all the logic for the sidebar on every single page
     // that displays the projects available to the user
 
-    $scope.$on('projectAdded', function(e,args){
-        console.log("side bar got the event");
-        var newproject = {"name":args.name};
+    $scope.$on('projectAdded', function(e,newproject){
         $scope.projects.push(newproject);
+        console.log()
         $timeout(function(){
             $scope.chooseProject(newproject);
         },500);
+    });
+
+    $scope.$on('projectDeleted', function(e,args){
+        // remove the project with args.id from the $scope.projects list
+        var l = $scope.projects.length;
+        // could optimize this search by storing the index of item in the
+        // array somewhere that the projects detail controller could access
+        // it as well. Then just return the index on the projectDeleted event.
+        var prev = 0;
+
+        // this solution doesn't account for situations when angular is using
+        // and displaying a different list of elements, sorted, filtered, or paginated.
+        for(var i = 0; i < l ; i++){
+            if($scope.projects[i].key === args.id){
+
+                // want to animate the deletion of this element before removing it
+                var el = $('.project-item').eq(i);
+                el.addClass('ui-animate');
+                $timeout(function(){
+                    $scope.projects.splice(i,1);
+                    if(i !== 0){
+                        // choose the project right before this one
+                        // unless its the first project, then use the default
+                        // 0 index for the first item
+                        prev = i - 1;
+                    }
+                    $scope.chooseProject($scope.projects[prev]);
+                }, 600);
+                
+                break;
+            }
+        }
+        
     });
 
     $scope.loadProjects = function(){
@@ -317,8 +467,9 @@ function SidebarCtrl( $scope, $location, $timeout, Project ) {
     };
 
     $scope.chooseProject = function(project){
+        $scope.query = '';
         $scope.activeProject = project;
-        $location.path('/project/' + project.name);
+        $location.path('/project/' + project.key);
     };
 
     $scope.isActive = function(project){

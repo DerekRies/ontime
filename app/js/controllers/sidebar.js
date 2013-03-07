@@ -20,6 +20,9 @@ function SidebarCtrl( $scope, $location, $timeout, Project ) {
         // array somewhere that the projects detail controller could access
         // it as well. Then just return the index on the projectDeleted event.
         var prev = 0;
+
+        // this solution doesn't account for situations when angular is using
+        // and displaying a different list of elements, sorted, filtered, or paginated.
         for(var i = 0; i < l ; i++){
             if($scope.projects[i].key === args.id){
 
@@ -59,6 +62,7 @@ function SidebarCtrl( $scope, $location, $timeout, Project ) {
     };
 
     $scope.chooseProject = function(project){
+        $scope.query = '';
         $scope.activeProject = project;
         $location.path('/project/' + project.key);
     };
