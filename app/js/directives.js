@@ -23,13 +23,18 @@ angular.module('myApp.directives', []).
 
     }
 })
-  .directive('markdown', function(){
+  .directive('markdown', ['$sanitize', function($sanitize){
       var converter = new Showdown.converter();
       var link = function(scope, element, attrs, model) {
         
-          var render = function(){     
-              if(model.$modelValue){
+          var render = function(){
+             // TODO: Find a better way to get scope properties that
+             // are more than 1 level deep.
+             // e.g. $scope.state.editing is 2 deep (state, and editing)
+              var hiding = (eval('scope.'+attrs.ngHide));
+              if(model.$modelValue && hiding !== true){
                 var htmlText = converter.makeHtml(model.$modelValue);
+                htmlText = $sanitize(htmlText);
                 element.html(htmlText);
               } 
           };
@@ -43,4 +48,15 @@ angular.module('myApp.directives', []).
           require: 'ngModel',
           link: link
       }
-  });
+  }])
+ .directive('otFocus', function() {
+    return function(scope, element, attrs) {
+       scope.$watch(attrs.otFocus, 
+         function (newValue) { 
+            if(!newValue){
+              scope[attrs.ngModel] = '';
+              element[0].focus();
+            }
+         },true);
+      };    
+});

@@ -63,4 +63,39 @@ angular.module('myApp.services', ['ngResource']).
             });
         }
     };
-  });
+}).
+factory('Task', function( $http, $location ){
+    $http.defaults.headers.post["Content-Type"] = "application/x-www-form-urlencoded";
+    $http.defaults.headers.put["Content-Type"] = "application/x-www-form-urlencoded";
+    return {
+        get: function(){
+            // GET -> /task/:id
+            // get a specific task
+        },
+        getAll: function(){
+            // GET -> /task
+            // get all tasks for this user
+        },
+        create: function(params,callback){
+            // POST -> /task
+            // POST add a new task to this project
+            console.log("creating task");
+            $http.post('/task', $.param(params)).success(function(data){
+                if(typeof callback === 'function'){
+                    callback(data);
+                }
+            }).
+            error(function(data){
+                console.log("Theres been an error");
+            });
+        },
+        edit: function(){
+            // PUT -> /task/:id
+            // PUT edit a specific task
+        },
+        remove: function(){
+            // DELETE -> /task/:id
+            // DELETE a specific task
+        },
+    }
+});

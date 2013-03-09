@@ -4,7 +4,7 @@
 // Declare app level module which depends on filters, and services
 
 angular.module('myApp', 
-    ['myApp.filters', 'myApp.services', 'myApp.directives', 'ui']).
+    ['myApp.filters', 'myApp.services', 'myApp.directives', 'ui', 'ngSanitize']).
   config(['$routeProvider','$locationProvider', function($routeProvider, $locationProvider) {
 
     $locationProvider.html5Mode(true).hashPrefix('!');
@@ -56,6 +56,10 @@ angular.module('myApp',
 
     $rootScope.$on('projectDeletedEmit', function(e, args){
         $rootScope.$broadcast('projectDeleted', args);
+    });
+
+    $rootScope.$on('projectNameChangeEmit', function(e, args){
+        $rootScope.$broadcast('projectNameChange', args);
     });
 
   });

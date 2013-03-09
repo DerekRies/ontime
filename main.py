@@ -19,7 +19,7 @@ import base64
 import json
 from boilerplate import BaseHandler
 
-from api import ProjectsEndpoint, ProjectEndpoint
+from api import ProjectsEndpoint, ProjectEndpoint, TaskEndpoint, TasksEndpoint
 
 from google.appengine.api import memcache
 from google.appengine.api import users
@@ -70,4 +70,6 @@ app = webapp2.WSGIApplication([
     # RESTful API endpoints
     (r'/projects', ProjectsEndpoint),
     (r'/projects/([\dA-Za-z\-]+)', ProjectEndpoint),
+    (r'/task', TasksEndpoint),
+    (r'/task/([\dA-Za-z\-]+)', TaskEndpoint),
 ], debug=True)

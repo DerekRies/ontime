@@ -65,7 +65,7 @@ function CreateProjectCtrl( $scope, $location, Project ) {
             console.log($scope.projectTags)
             Project.create(newproject, function(data){
                 $scope.resetForm();
-                $scope.createFinish();
+                // $scope.createFinish();
                 newproject['key'] = data;
                 $scope.$emit('projectAddedEmit', newproject);
             });

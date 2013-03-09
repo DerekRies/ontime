@@ -39,9 +39,9 @@
     <div class="navbar-inner">
       <div>
         
-        <a href="/" class="brand">onTime</a>
+        <a href="/" class="brand hidden-phone">onTime</a>
         <ul class="nav">
-          <li><a href="/"><span class="hidden-phone">Dashboard</span> <i class="icon-check icon-white"></i></a></li>
+          <li><a href="/"><span class="hidden-phone">Dashboard</span> <i class="icon-th-list icon-white"></i></a></li>
           <li><a href="/settings"><span class="hidden-phone">Settings</span> <i class="icon-cog icon-white"></i></a></li>
           <li><a href="/help"><span class="hidden-phone">Help</span> <i class="icon-question-sign icon-white"></i></a></li>
         </ul>
@@ -57,18 +57,20 @@
   <div class="container-fluid">
     <div class="row-fluid">
       <div class="span3 affix" id="sidebar" ng-controller="SidebarCtrl">
+        <div id="sidebar-header">
+          <div class="clearfix">
+            <h3>My Projects</h3>
+            <button class="btn btn-primary btn-large pull-right" ng-click="createNewProject()">New <i class="icon-plus-sign icon-white"></i></button>
+          </div>
+          <form class="form-search" id="search-form">
+              <div id="search-form-inner">
+                <input id="searchbar" type="text" class="search-query" ng-model="query.name">
+                <i class="icon-search icon-white" id="search-icon"></i>
+              </div>
+          </form>
+        </div>
+
         <ul class="nav nav-list">
-          <li class="nav-header">
-            My Projects 
-            <button class="btn btn-small btn-primary pull-right" ng-click="createNewProject()">New Project</button>
-          </li>
-          <li class="divider"></li>
-          <li class="nav-header clearfix">
-            Search:
-            <input type="text" class="pull-right" ng-model="query.name">
-            <br>
-          </li>
-          <li class="divider"></li>
           <li ng-hide="loading.finished" style="text-align:center;">Loading...</li>
           <li ng-repeat="project in projects | filter:query" class="ng-cloak project-item" ui-animate>
             <a ng-click="chooseProject(project)" ng-class="{activeproject: isActive(project)}">{{project.name | inflector:humanize }} 
@@ -100,6 +102,7 @@
   <!-- // <script src="/app/lib/d3.min.js"></script> -->
   <!-- // <script src="/app/lib/moment.min.js"></script> -->
   <script src="/app/lib/angular/angular.min.js"></script>
+  <script src="/app/lib/angular/angular-sanitize.min.js"></script>
   <script src="/app/lib/angular/angular-resource.min.js"></script>
   <script src="/app/lib/angular-ui.min.js"></script>
   <script src="/app/lib/showdown.js"></script>

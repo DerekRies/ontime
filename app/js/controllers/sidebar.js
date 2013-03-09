@@ -13,6 +13,13 @@ function SidebarCtrl( $scope, $location, $timeout, Project ) {
         },500);
     });
 
+    $scope.$on('projectNameChange', function(e,project){
+        
+        console.log(project);
+        $scope.getProjectById(project.id).name = project.name;
+        
+    });
+
     $scope.$on('projectDeleted', function(e,args){
         // remove the project with args.id from the $scope.projects list
         var l = $scope.projects.length;
@@ -60,6 +67,44 @@ function SidebarCtrl( $scope, $location, $timeout, Project ) {
 
         $scope.activeProject = undefined;
     };
+
+    // Non cached old version  
+    // $scope.getProjectById = function(id){
+    //     // use a binary search if list is sorted by id/key
+    //     // otherwise use a normal search
+
+    //     // cache the results as well
+    //     var l = $scope.projects.length;
+    //     for(var i = 0; i < l ; i++){
+    //         if($scope.projects[i].key === id){
+    //             return $scope.projects[i];
+    //         }
+    //     }
+    // };
+
+    $scope.getProjectById = (function(){
+
+        var cache = {};
+
+        return function(id){
+            var l = $scope.projects.length;
+            var cached = cache[id];
+
+            if(cached){
+                // cache hit
+                return cached;
+            }
+
+            // cache miss
+            for(var i = 0; i < l ; i++){
+                if($scope.projects[i].key === id){
+                    cache[id] = $scope.projects[i];
+                    return $scope.projects[i];
+                }
+            }
+        };
+
+    })();
 
     $scope.chooseProject = function(project){
         $scope.query = '';

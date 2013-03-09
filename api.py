@@ -115,12 +115,13 @@ class ProjectEndpoint(BaseHandler):
             if project and project.user_id == user.user_id():
                 project = project.to_dict()
                 project["date"] = str(project["date"])
-                # logs = RequestLog.query_logs(key)
-                # for log in logs:
-                #     log = log.to_dict()
-                #     log["date"] = str(log["date"])
-                #     output.append(log)
-                self.write(json.dumps({"project":project}))
+                tasks = Task.query_tasks(key)
+                output = []
+                for task in tasks:
+                    task = task.to_dict()
+                    task["date"] = str(task["date"])
+                    output.append(task)
+                self.write(json.dumps({"project":project,"tasks":output}))
 
             else:
                 self.abort(404)
@@ -163,6 +164,75 @@ class ProjectEndpoint(BaseHandler):
             self.write("no user mate, fuck off")
 
 
+
+class TaskEndpoint(BaseHandler):
+    """
+    The /task/:id endpoint, handles individual tasks
+    GET -> Return relevant data, not needed though
+    POST -> NOTHING
+    PUT -> Update a given task
+    DELETE -> Delete a given task
+    """
+    def get(self,id):
+        self.write("no endpoint")
+    def post(self,id):
+        self.write("no endpoint")
+    def put(self,id):
+        self.write("updating this task")
+    def delete(self,id):
+        user = users.get_current_user()
+        if user:
+            key = ndb.Key(urlsafe=id)
+            task = key.get()
+            if task and task.user_id == user.user_id():
+                key.delete()
+                self.write("true")
+            else:
+                self.write("false")
+        else:
+            self.write("no user")
+
+class TasksEndpoint(BaseHandler):
+    """
+    The /task endpoint, handles multiple tasks
+    GET -> Return all tasks associated with this user_id
+    POST -> Create a new Task
+    PUT -> Update a batch of tasks
+    DELETE -> Delete a batch of tasks
+
+    """
+
+    def get(self):
+        self.write("getting all tasks for user")
+    def post(self):
+        self.response.headers['Content-Type'] = 'application/json'
+        user = users.get_current_user()
+        if user:
+            project_key_str = self.request.get('projectKey')
+            project_key = ndb.Key(urlsafe=project_key_str)
+
+            name = self.request.get('name')
+            user_id = user.user_id()
+            category = self.request.get('category')
+            priority = int(self.request.get('priority'))
+            task = Task(parent=project_key)
+
+            task.populate(name=name,
+                          user_id=user_id,
+                          category=category,
+                          priority=priority)
+
+            task_key = task.put()
+            self.write(json.dumps({"status":"success","task_key":task_key.urlsafe()}))
+        else:
+            self.write("No user")
+    def put(self):
+        self.write("updating task batch")
+    def delete(self):
+        self.write("deleting task batch")
+
+
+
 # Models
 class Account(ndb.Model):
     display_name = ndb.StringProperty()
@@ -190,6 +260,15 @@ class Task(ndb.Model):
     date = ndb.DateTimeProperty(auto_now_add=True)
     complete = ndb.BooleanProperty(default=False)
     time_logged = ndb.IntegerProperty(default=0)
+    priority = ndb.IntegerProperty(default=1)
+    category = ndb.StringProperty()
+    user_id = ndb.StringProperty(required=True)
+
+    @classmethod
+    def query_tasks(cls,ancestor_key):
+        return cls.query(ancestor=ancestor_key)
+
+
 
 
 

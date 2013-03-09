@@ -6,17 +6,19 @@ function ProjectDetailsCtrl($scope,
                             $timeout, 
                             Project, 
                             $filter, 
-                            $location 
+                            $location,
+                            Task
 ) {
 
-    $scope.completion = 0;
     $scope.project = {};
     $scope.projectClean = {};
 
     $scope.state = {
         loading: true,
         editing: false,
-        creating: false
+        creating: false,
+        completion: 0,
+        totalHours: 0
     }
 
     $('.tooltips').tooltip({
@@ -28,10 +30,11 @@ function ProjectDetailsCtrl($scope,
     Project.get($routeParams.id, function(data){
         document.title = $filter('inflector')(data.project.name) + " | onTime";
         $scope.project = data.project;
+        console.log(data.tasks);
         angular.copy($scope.project, $scope.projectClean);
         $scope.state.loading = false;
         $timeout(function(){
-            $scope.completion = Math.ceil(Math.random() * 100);
+            $scope.recalculateCompletion();
         },350);
     });
 
@@ -49,7 +52,14 @@ function ProjectDetailsCtrl($scope,
 
     $scope.saveEdits = function(){
         $scope.state.editing = false;
-        console.log($scope.project.name);
+
+        // HACKISH SOLUTION: The directive only renders content when
+        // it is visible and on changes of the model its watching.
+        // In this case the model gets modified, and then made visible
+        // so it never has a chance to re-render until a new page is loaded
+        // This line changes the model subtly when it becomes visible
+        // forcing a directive render.
+        $scope.project.description += ' ';
 
         if($scope.project.name !== $scope.projectClean.name){
             $scope.$emit('projectNameChangeEmit', 
@@ -70,7 +80,31 @@ function ProjectDetailsCtrl($scope,
     };
 
     $scope.recalculateCompletion = function(){
-        $scope.completion = Math.ceil(Math.random() * 100);
+        $scope.state.completion = Math.ceil(Math.random() * 100);
+        $scope.state.totalHours = Math.ceil(Math.random() * 30);
+    };
+
+    $scope.openNewTask = function(){
+        $scope.state.creating = true;
+        // focus the task name field
+    };
+
+    $scope.addTask = function(){
+        if($scope.taskname.length >= 1){
+            var params = {
+                projectKey: $routeParams.id,
+                name: $scope.taskname,
+                category: '',
+                priority: 1,
+
+            };
+
+            Task.create(params, function(data){
+                console.log(data);
+            });
+            $scope.state.creating = false;
+        }
+        
     };
 
     $scope.completeTask = function(task){
@@ -93,5 +127,6 @@ ProjectDetailsCtrl.$inject = [
     '$timeout', 
     'Project', 
     '$filter', 
-    '$location' 
+    '$location',
+    'Task' 
 ];
