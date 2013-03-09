@@ -4,7 +4,7 @@
 // Declare app level module which depends on filters, and services
 
 angular.module('myApp', 
-    ['myApp.filters', 'myApp.services', 'myApp.directives', 'ui']).
+    ['myApp.filters', 'myApp.services', 'myApp.directives', 'ui', 'ngSanitize']).
   config(['$routeProvider','$locationProvider', function($routeProvider, $locationProvider) {
 
     $locationProvider.html5Mode(true).hashPrefix('!');
@@ -58,6 +58,10 @@ angular.module('myApp',
         $rootScope.$broadcast('projectDeleted', args);
     });
 
+    $rootScope.$on('projectNameChangeEmit', function(e, args){
+        $rootScope.$broadcast('projectNameChange', args);
+    });
+
   });
 
 
@@ -84,13 +88,18 @@ angular.module('myApp.directives', []).
 
     }
 })
-  .directive('markdown', function(){
+  .directive('markdown', ['$sanitize', function($sanitize){
       var converter = new Showdown.converter();
       var link = function(scope, element, attrs, model) {
         
-          var render = function(){     
-              if(model.$modelValue){
+          var render = function(){
+             // TODO: Find a better way to get scope properties that
+             // are more than 1 level deep.
+             // e.g. $scope.state.editing is 2 deep (state, and editing)
+              var hiding = (eval('scope.'+attrs.ngHide));
+              if(model.$modelValue && hiding !== true){
                 var htmlText = converter.makeHtml(model.$modelValue);
+                htmlText = $sanitize(htmlText);
                 element.html(htmlText);
               } 
           };
@@ -104,7 +113,18 @@ angular.module('myApp.directives', []).
           require: 'ngModel',
           link: link
       }
-  });
+  }])
+ .directive('otFocus', function() {
+    return function(scope, element, attrs) {
+       scope.$watch(attrs.otFocus, 
+         function (newValue) { 
+            if(!newValue){
+              scope[attrs.ngModel] = '';
+              element[0].focus();
+            }
+         },true);
+      };    
+});
 
 /* Filters */
 
@@ -179,7 +199,50 @@ angular.module('myApp.services', ['ngResource']).
             });
         }
     };
-  });
+}).
+factory('Task', function( $http, $location ){
+    $http.defaults.headers.post["Content-Type"] = "application/x-www-form-urlencoded";
+    $http.defaults.headers.put["Content-Type"] = "application/x-www-form-urlencoded";
+    return {
+        get: function(){
+            // GET -> /task/:id
+            // get a specific task
+        },
+        getAll: function(){
+            // GET -> /task
+            // get all tasks for this user
+        },
+        create: function(params,callback){
+            // POST -> /task
+            // POST add a new task to this project
+            console.log("creating task");
+            $http.post('/task', $.param(params)).success(function(data){
+                if(typeof callback === 'function'){
+                    callback(data);
+                }
+            }).
+            error(function(data){
+                console.log("Theres been an error");
+            });
+        },
+        edit: function(id, params, callback){
+            // PUT -> /task/:id
+            // PUT edit a specific task
+            $http.put('/task/' + id, $.param(params)).success(function(data){
+                if(typeof callback === 'function'){
+                    callback(data);
+                }
+            }).
+            error(function(data){
+                console.log("Theres been an error");
+            });
+        },
+        remove: function(){
+            // DELETE -> /task/:id
+            // DELETE a specific task
+        }
+    }
+});
 var TIMER_OPEN = false;
 function openTimers(){
 // $('#timer-bar').css('bottom','0px'); 
@@ -267,7 +330,7 @@ function CreateProjectCtrl( $scope, $location, Project ) {
             console.log($scope.projectTags)
             Project.create(newproject, function(data){
                 $scope.resetForm();
-                $scope.createFinish();
+                // $scope.createFinish();
                 newproject['key'] = data;
                 $scope.$emit('projectAddedEmit', newproject);
             });
@@ -309,17 +372,20 @@ function ProjectDetailsCtrl($scope,
                             $timeout, 
                             Project, 
                             $filter, 
-                            $location 
+                            $location,
+                            Task
 ) {
 
-    $scope.completion = 0;
     $scope.project = {};
     $scope.projectClean = {};
 
     $scope.state = {
         loading: true,
         editing: false,
-        creating: false
+        creating: false,
+        completion: 0,
+        totalHours: 0,
+        orderProp: 'name'
     }
 
     $('.tooltips').tooltip({
@@ -331,10 +397,11 @@ function ProjectDetailsCtrl($scope,
     Project.get($routeParams.id, function(data){
         document.title = $filter('inflector')(data.project.name) + " | onTime";
         $scope.project = data.project;
+        $scope.tasks = data.tasks;
         angular.copy($scope.project, $scope.projectClean);
         $scope.state.loading = false;
         $timeout(function(){
-            $scope.completion = Math.ceil(Math.random() * 100);
+            $scope.recalculateCompletion();
         },350);
     });
 
@@ -352,7 +419,14 @@ function ProjectDetailsCtrl($scope,
 
     $scope.saveEdits = function(){
         $scope.state.editing = false;
-        console.log($scope.project.name);
+
+        // HACKISH SOLUTION: The directive only renders content when
+        // it is visible and on changes of the model its watching.
+        // In this case the model gets modified, and then made visible
+        // so it never has a chance to re-render until a new page is loaded
+        // This line changes the model subtly when it becomes visible
+        // forcing a directive render.
+        $scope.project.description += ' ';
 
         if($scope.project.name !== $scope.projectClean.name){
             $scope.$emit('projectNameChangeEmit', 
@@ -373,17 +447,49 @@ function ProjectDetailsCtrl($scope,
     };
 
     $scope.recalculateCompletion = function(){
-        $scope.completion = Math.ceil(Math.random() * 100);
+        $scope.state.completion = Math.ceil(Math.random() * 100);
+        $scope.state.totalHours = Math.ceil(Math.random() * 30);
     };
 
-    $scope.completeTask = function(task){
-        console.log(task);
-        $('.task-item').eq(task).addClass('to-complete');
+    $scope.openNewTask = function(){
+        $scope.state.creating = true;
+        // focus the task name field
     };
 
-    $scope.deleteTask = function(task){
-        console.log(task);
-        $('.task-item').eq(task).addClass('ui-animate');
+    $scope.addTask = function(){
+        if($scope.taskname.length >= 1){
+            var params = {
+                projectKey: $routeParams.id,
+                name: $scope.taskname,
+                category: '',
+                priority: 1
+            };
+
+            params['key'] = 'none';
+            $scope.tasks.push(params);
+
+            Task.create(params, function(data){
+                // update the tasks key with the one from the server when we get it
+                params.key = data.task_key
+            });
+
+            $scope.taskname = '';
+
+            // $scope.state.creating = false;
+        }
+        
+    };
+
+    $scope.completeTask = function(task, i){
+        // Animate and update in scope model immediately
+        // Update on server in the background
+        $('.task-item').eq(i).addClass('to-complete');
+    };
+
+    $scope.deleteTask = function(task,i){
+        // Animate and remove from scope model immediately
+        // Remove from server in the background
+        $('.task-item').eq(i).addClass('ui-animate');
     };
 
 
@@ -396,7 +502,8 @@ ProjectDetailsCtrl.$inject = [
     '$timeout', 
     'Project', 
     '$filter', 
-    '$location' 
+    '$location',
+    'Task' 
 ];
 
 function SettingsCtrl( $scope ) {
@@ -416,6 +523,13 @@ function SidebarCtrl( $scope, $location, $timeout, Project ) {
         $timeout(function(){
             $scope.chooseProject(newproject);
         },500);
+    });
+
+    $scope.$on('projectNameChange', function(e,project){
+        
+        console.log(project);
+        $scope.getProjectById(project.id).name = project.name;
+        
     });
 
     $scope.$on('projectDeleted', function(e,args){
@@ -465,6 +579,44 @@ function SidebarCtrl( $scope, $location, $timeout, Project ) {
 
         $scope.activeProject = undefined;
     };
+
+    // Non cached old version  
+    // $scope.getProjectById = function(id){
+    //     // use a binary search if list is sorted by id/key
+    //     // otherwise use a normal search
+
+    //     // cache the results as well
+    //     var l = $scope.projects.length;
+    //     for(var i = 0; i < l ; i++){
+    //         if($scope.projects[i].key === id){
+    //             return $scope.projects[i];
+    //         }
+    //     }
+    // };
+
+    $scope.getProjectById = (function(){
+
+        var cache = {};
+
+        return function(id){
+            var l = $scope.projects.length;
+            var cached = cache[id];
+
+            if(cached){
+                // cache hit
+                return cached;
+            }
+
+            // cache miss
+            for(var i = 0; i < l ; i++){
+                if($scope.projects[i].key === id){
+                    cache[id] = $scope.projects[i];
+                    return $scope.projects[i];
+                }
+            }
+        };
+
+    })();
 
     $scope.chooseProject = function(project){
         $scope.query = '';

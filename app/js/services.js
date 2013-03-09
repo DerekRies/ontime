@@ -89,13 +89,21 @@ factory('Task', function( $http, $location ){
                 console.log("Theres been an error");
             });
         },
-        edit: function(){
+        edit: function(id, params, callback){
             // PUT -> /task/:id
             // PUT edit a specific task
+            $http.put('/task/' + id, $.param(params)).success(function(data){
+                if(typeof callback === 'function'){
+                    callback(data);
+                }
+            }).
+            error(function(data){
+                console.log("Theres been an error");
+            });
         },
         remove: function(){
             // DELETE -> /task/:id
             // DELETE a specific task
-        },
+        }
     }
 });

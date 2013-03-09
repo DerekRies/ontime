@@ -36,7 +36,7 @@ class MainHandler(BaseHandler):
     def get(self):
         user = users.get_current_user()
         if user:
-            self.render("app.html", {
+            self.render("build/app.html", {
                 "title": " - Dashboard",
                 "name":user.nickname(),
                 "logout_url":users.create_logout_url("/login")

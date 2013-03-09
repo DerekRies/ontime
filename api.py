@@ -118,8 +118,10 @@ class ProjectEndpoint(BaseHandler):
                 tasks = Task.query_tasks(key)
                 output = []
                 for task in tasks:
+                    tkey = task.key.urlsafe()
                     task = task.to_dict()
                     task["date"] = str(task["date"])
+                    task["key"] = tkey
                     output.append(task)
                 self.write(json.dumps({"project":project,"tasks":output}))
 
@@ -178,7 +180,9 @@ class TaskEndpoint(BaseHandler):
     def post(self,id):
         self.write("no endpoint")
     def put(self,id):
-        self.write("updating this task")
+        self.response.headers['Content-Type'] = 'application/json'
+        tkey = id
+        self.write(json.dumps({"status": "success","key":tkey}))
     def delete(self,id):
         user = users.get_current_user()
         if user:
@@ -212,13 +216,11 @@ class TasksEndpoint(BaseHandler):
             project_key = ndb.Key(urlsafe=project_key_str)
 
             name = self.request.get('name')
-            user_id = user.user_id()
             category = self.request.get('category')
             priority = int(self.request.get('priority'))
             task = Task(parent=project_key)
 
             task.populate(name=name,
-                          user_id=user_id,
                           category=category,
                           priority=priority)
 
@@ -242,13 +244,13 @@ class Project(ndb.Model):
     name = ndb.StringProperty(required=True)
     date = ndb.DateTimeProperty(auto_now_add=True)
     deadline = ndb.DateTimeProperty()
-    description = ndb.TextProperty()
-    founder = ndb.StringProperty()
-    tags = ndb.StringProperty(repeated=True)
+    description = ndb.TextProperty(indexed=False)
+    founder = ndb.StringProperty(indexed=False)
+    tags = ndb.StringProperty(repeated=True, indexed=False)
     complete = ndb.BooleanProperty(default=False)
-    public_viewing = ndb.BooleanProperty(default=True)
-    public_editing = ndb.BooleanProperty(default=False)
-    user_id = ndb.StringProperty(required=True)
+    public_viewing = ndb.BooleanProperty(default=True, indexed=False)
+    public_editing = ndb.BooleanProperty(default=False, indexed=False)
+    user_id = ndb.StringProperty(required=True, indexed=False)
 
     @classmethod
     def query_projects(cls,ancestor_key):
@@ -257,12 +259,11 @@ class Project(ndb.Model):
 
 class Task(ndb.Model):
     name = ndb.StringProperty(required=True)
-    date = ndb.DateTimeProperty(auto_now_add=True)
+    date = ndb.DateTimeProperty(auto_now_add=True, indexed=False)
     complete = ndb.BooleanProperty(default=False)
-    time_logged = ndb.IntegerProperty(default=0)
-    priority = ndb.IntegerProperty(default=1)
-    category = ndb.StringProperty()
-    user_id = ndb.StringProperty(required=True)
+    time_logged = ndb.IntegerProperty(default=0, indexed=False)
+    priority = ndb.IntegerProperty(default=1, indexed=False)
+    category = ndb.StringProperty(indexed=False)
 
     @classmethod
     def query_tasks(cls,ancestor_key):

@@ -118,11 +118,11 @@
                 
             </div>
         </li>
-        <li ng-repeat="task in [0,1,2,3,4]" class="task-item" ui-animate>
+        <li ng-repeat="task in tasks | orderBy:state.orderProp" class="task-item" ui-animate>
             <div class="pull-left">
-                <h4 class="task-title">Task Name</h4>
-                <button class="btn btn-small btn-success" ng-click="completeTask(task)"><i class="icon-ok icon-white"></i></button>
-                <button class="btn btn-small" ng-click="deleteTask(task)"><i class="icon-trash"></i></button>
+                <h4 class="task-title">{{task.name}}</h4>
+                <button class="btn btn-small btn-success" ng-click="completeTask(task, $index)"><i class="icon-ok icon-white"></i></button>
+                <button class="btn btn-small" ng-click="deleteTask(task, $index)"><i class="icon-trash"></i></button>
             </div>
             <div class="inline-timer pull-right">
                 

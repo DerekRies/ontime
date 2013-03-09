@@ -18,7 +18,8 @@ function ProjectDetailsCtrl($scope,
         editing: false,
         creating: false,
         completion: 0,
-        totalHours: 0
+        totalHours: 0,
+        orderProp: 'name'
     }
 
     $('.tooltips').tooltip({
@@ -30,7 +31,7 @@ function ProjectDetailsCtrl($scope,
     Project.get($routeParams.id, function(data){
         document.title = $filter('inflector')(data.project.name) + " | onTime";
         $scope.project = data.project;
-        console.log(data.tasks);
+        $scope.tasks = data.tasks;
         angular.copy($scope.project, $scope.projectClean);
         $scope.state.loading = false;
         $timeout(function(){
@@ -95,26 +96,34 @@ function ProjectDetailsCtrl($scope,
                 projectKey: $routeParams.id,
                 name: $scope.taskname,
                 category: '',
-                priority: 1,
-
+                priority: 1
             };
 
+            params['key'] = 'none';
+            $scope.tasks.push(params);
+
             Task.create(params, function(data){
-                console.log(data);
+                // update the tasks key with the one from the server when we get it
+                params.key = data.task_key
             });
-            $scope.state.creating = false;
+
+            $scope.taskname = '';
+
+            // $scope.state.creating = false;
         }
         
     };
 
-    $scope.completeTask = function(task){
-        console.log(task);
-        $('.task-item').eq(task).addClass('to-complete');
+    $scope.completeTask = function(task, i){
+        // Animate and update in scope model immediately
+        // Update on server in the background
+        $('.task-item').eq(i).addClass('to-complete');
     };
 
-    $scope.deleteTask = function(task){
-        console.log(task);
-        $('.task-item').eq(task).addClass('ui-animate');
+    $scope.deleteTask = function(task,i){
+        // Animate and remove from scope model immediately
+        // Remove from server in the background
+        $('.task-item').eq(i).addClass('ui-animate');
     };
 
 
