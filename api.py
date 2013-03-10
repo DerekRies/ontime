@@ -180,9 +180,44 @@ class TaskEndpoint(BaseHandler):
     def post(self,id):
         self.write("no endpoint")
     def put(self,id):
+        """
+        The edit action really only has to worry about several of the fields:
+        1. task name
+        2. Complete status
+        3. Priority
+        4. Time Logged
+        """
         self.response.headers['Content-Type'] = 'application/json'
-        tkey = id
-        self.write(json.dumps({"status": "success","key":tkey}))
+        tkey = ndb.Key(urlsafe=id)
+        task = tkey.get()
+
+        name = self.request.get('name')
+        if name != '':
+            logging.info(name)
+            task.name = name
+
+        complete = self.request.get('complete')
+        if complete != '':
+            # also don't update that field
+            complete = True if complete == 'true' else False
+            logging.info(complete)
+            task.complete = complete
+
+        time_logged = self.request.get('time_logged')
+        if time_logged != '':
+            logging.info(time_logged)
+            task.time_logged = int(time_logged)
+
+        priority = self.request.get('priority')
+        if priority != '':
+            logging.info(priority)
+            task.priority = int(priority)
+
+        task.put()
+
+
+
+        self.write(json.dumps({"status": "success","key":id}))
     def delete(self,id):
         user = users.get_current_user()
         if user:
@@ -209,6 +244,7 @@ class TasksEndpoint(BaseHandler):
     def get(self):
         self.write("getting all tasks for user")
     def post(self):
+        time.sleep(5)
         self.response.headers['Content-Type'] = 'application/json'
         user = users.get_current_user()
         if user:

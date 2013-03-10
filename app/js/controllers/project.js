@@ -19,7 +19,11 @@ function ProjectDetailsCtrl($scope,
         creating: false,
         completion: 0,
         totalHours: 0,
-        orderProp: 'name'
+        orderProp: 'name',
+        // A task view of 'true' displays all tasks that are complete
+        // a view of 'false' displays all active tasks
+        // and a view of '' displays tasks of both complete and active
+        taskView: 'false'
     }
 
     $('.tooltips').tooltip({
@@ -81,8 +85,21 @@ function ProjectDetailsCtrl($scope,
     };
 
     $scope.recalculateCompletion = function(){
-        $scope.state.completion = Math.ceil(Math.random() * 100);
+
+        var l = $scope.tasks.length,
+            c = $scope.completedTasks(l);
+
+        $scope.state.completion = Math.floor(c / l * 100) || 0; 
+        // $scope.state.completion = Math.ceil(Math.random() * 100);
         $scope.state.totalHours = Math.ceil(Math.random() * 30);
+    };
+
+    $scope.completedTasks = function(l){
+        var total = 0;
+        for(var i=0; i < l; i++){
+            if($scope.tasks[i].complete) total += 1;
+        }
+        return total;
     };
 
     $scope.openNewTask = function(){
@@ -96,7 +113,8 @@ function ProjectDetailsCtrl($scope,
                 projectKey: $routeParams.id,
                 name: $scope.taskname,
                 category: '',
-                priority: 1
+                priority: 1,
+                complete:false
             };
 
             params['key'] = 'none';
@@ -105,6 +123,22 @@ function ProjectDetailsCtrl($scope,
             Task.create(params, function(data){
                 // update the tasks key with the one from the server when we get it
                 params.key = data.task_key
+
+
+
+                if(params.complete){
+                    // if someone clicked the complete button before the server returned
+                    // the key, then we need to do the edit inside the callback
+                    // that returns the key when its available
+                    // unlikely to happen, but you never know if the server hangs
+                    Task.edit(params.key, {
+                        'complete': true
+                    }, function(data){
+                        console.log(data);
+                    });
+                }
+
+
             });
 
             $scope.taskname = '';
@@ -117,13 +151,43 @@ function ProjectDetailsCtrl($scope,
     $scope.completeTask = function(task, i){
         // Animate and update in scope model immediately
         // Update on server in the background
-        $('.task-item').eq(i).addClass('to-complete');
+        $scope.changeTask(task, i, true, 'to-complete');
+    };
+
+    $scope.reactivateTask = function(task, i){
+        $scope.changeTask(task, i, false, 'to-reactivate');
     };
 
     $scope.deleteTask = function(task,i){
         // Animate and remove from scope model immediately
         // Remove from server in the background
-        $('.task-item').eq(i).addClass('ui-animate');
+        $('.task-item').eq(i).addClass('to-delete');
+    };
+
+    $scope.changeTask = function(task, i, val, classVal){
+        // should wait until all edits have stopped for at least 2 seconds
+        // to remove the spaces, and actually commit the changes.
+        // User could be trying to click through multiple, and removing
+        // from the list shifts the elements around and kills animations.
+        $('.task-item').eq(i).addClass(classVal);
+        $timeout(function(){
+            task.complete = val;
+            $scope.recalculateCompletion();
+        },1000);
+        
+        if(task.key === 'none'){
+            // this is a task that hasnt had its key returned from the server yet.
+            // should instead wait for the key to come back, and then send
+            // the edit.
+            console.log(task);
+        }
+        else{
+            Task.edit(task.key, {
+                'complete': val
+            }, function(data){
+                console.log(data);
+            });
+        }
     };
 
 

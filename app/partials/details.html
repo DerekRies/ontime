@@ -98,9 +98,9 @@
         <div class="btn-toolbar pull-right">
             <div class="btn-group">
                 <button class="btn btn-link" disabled>View:</button>
-                <button class="btn btn-info active">Active</button>
-                <button class="btn btn-default">Complete</button>
-                <button class="btn btn-default">Both</button>
+                <button class="btn btn-default" ng-click="state.taskView = 'false'" ng-class="{'btn-info active': state.taskView == 'false'}">Active</button>
+                <button class="btn btn-default" ng-click="state.taskView = 'true'" ng-class="{'btn-info active': state.taskView == 'true'}">Complete</button>
+                <button class="btn btn-default" ng-click="state.taskView = ''" ng-class="{'btn-info active': state.taskView == ''}">Both</button>
             </div>
 
         </div>
@@ -118,10 +118,12 @@
                 
             </div>
         </li>
-        <li ng-repeat="task in tasks | orderBy:state.orderProp" class="task-item" ui-animate>
+        <li ng-repeat="task in tasks | filter:task.complete = state.taskView" class="task-item" ng-class="{taskcomplete: task.complete}" ui-animate>
             <div class="pull-left">
-                <h4 class="task-title">{{task.name}}</h4>
-                <button class="btn btn-small btn-success" ng-click="completeTask(task, $index)"><i class="icon-ok icon-white"></i></button>
+                <h4 class="task-title">{{task.name}} <small ng-show="task.complete" style="color:green;"> - Complete</small></h4>
+                <button ng-hide="task.complete" class="btn btn-small btn-success" ng-click="completeTask(task, $index)"><i class="icon-ok icon-white"></i></button>
+                <button ng-show="task.complete" class="btn btn-small btn-success" ng-click="reactivateTask(task, $index)"><i class="icon-asterisk icon-white"></i></button>
+
                 <button class="btn btn-small" ng-click="deleteTask(task, $index)"><i class="icon-trash"></i></button>
             </div>
             <div class="inline-timer pull-right">
