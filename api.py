@@ -167,6 +167,17 @@ class ProjectEndpoint(BaseHandler):
 
 
 
+def canEditTask(key, task):
+    user = users.get_current_user()
+    if user and task:
+        # They key is a task, its parent key is a project,
+        # and the projects parent key is an account, the id
+        # of which is a user id. It needs to match the current
+        # user trying to edit this task.
+        return key.parent().parent().id() == user.user_id()
+    else:
+        return False
+
 class TaskEndpoint(BaseHandler):
     """
     The /task/:id endpoint, handles individual tasks
@@ -219,17 +230,18 @@ class TaskEndpoint(BaseHandler):
 
         self.write(json.dumps({"status": "success","key":id}))
     def delete(self,id):
+        self.response.headers['Content-Type'] = 'application/json'
         user = users.get_current_user()
         if user:
             key = ndb.Key(urlsafe=id)
             task = key.get()
-            if task and task.user_id == user.user_id():
+            if canEditTask(key, task):
                 key.delete()
-                self.write("true")
+                self.write(json.dumps({"status": "success", "info": "Task has been deleted"}))
             else:
-                self.write("false")
+                self.write(json.dumps({"status": "fail", "info": "This user can't edit that task"}))
         else:
-            self.write("no user")
+            self.write(json.dumps({"status": "fail", "info": "No user account was found"}))
 
 class TasksEndpoint(BaseHandler):
     """
@@ -244,7 +256,6 @@ class TasksEndpoint(BaseHandler):
     def get(self):
         self.write("getting all tasks for user")
     def post(self):
-        time.sleep(5)
         self.response.headers['Content-Type'] = 'application/json'
         user = users.get_current_user()
         if user:

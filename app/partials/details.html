@@ -118,7 +118,7 @@
                 
             </div>
         </li>
-        <li ng-repeat="task in tasks | filter:task.complete = state.taskView" class="task-item" ng-class="{taskcomplete: task.complete}" ui-animate>
+        <li ng-repeat="task in tasks | filter:task.complete = state.taskView" class="task-item" ng-class="{taskcomplete: task.complete}" ui-animate hm-swiperight="toggleCompleteTask(task, $index)">
             <div class="pull-left">
                 <h4 class="task-title">{{task.name}} <small ng-show="task.complete" style="color:green;"> - Complete</small></h4>
                 <button ng-hide="task.complete" class="btn btn-small btn-success" ng-click="completeTask(task, $index)"><i class="icon-ok icon-white"></i></button>

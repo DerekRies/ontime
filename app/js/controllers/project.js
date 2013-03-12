@@ -137,6 +137,14 @@ function ProjectDetailsCtrl($scope,
                         console.log(data);
                     });
                 }
+                if(params.toDelete){
+                    console.log(params.toDelete)
+                    // if someone clicked the button to delete this task before the 
+                    // server returned the key.
+                    Task.remove(params.key, function(data){
+                        console.log(data);
+                    });
+                }
 
 
             });
@@ -158,10 +166,41 @@ function ProjectDetailsCtrl($scope,
         $scope.changeTask(task, i, false, 'to-reactivate');
     };
 
+    $scope.toggleCompleteTask = function(task, i){
+        if(task.complete){
+            $scope.reactivateTask(task, i);
+        }
+        else{
+            $scope.completeTask(task, i)
+        }
+    }
+
     $scope.deleteTask = function(task,i){
         // Animate and remove from scope model immediately
         // Remove from server in the background
         $('.task-item').eq(i).addClass('to-delete');
+
+        $timeout(function(){
+            // remove the task from the scope.tasks
+            for (var i = 0; i < $scope.tasks.length; i++) {
+                if ($scope.tasks[i] === task){
+                    $scope.tasks.splice(i, 1);
+                    break;
+                }
+            };
+            $scope.recalculateCompletion();
+        },500);
+
+        if(task.key === 'none'){
+            console.log("cant delete just this second");
+            // mark the task to be deleted
+            task.toDelete = true;
+        }
+        else{        
+            Task.remove(task.key, function(data){
+                console.log(data);
+            });
+        }
     };
 
     $scope.changeTask = function(task, i, val, classVal){
@@ -179,6 +218,8 @@ function ProjectDetailsCtrl($scope,
             // this is a task that hasnt had its key returned from the server yet.
             // should instead wait for the key to come back, and then send
             // the edit.
+
+            // All of that logic is handled inside the create function
             console.log(task);
         }
         else{
@@ -188,6 +229,12 @@ function ProjectDetailsCtrl($scope,
                 console.log(data);
             });
         }
+    };
+
+
+    $scope.swipeTest = function(task){
+        console.log(task);
+        alert("Swiped it");
     };
 
 

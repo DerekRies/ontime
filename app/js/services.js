@@ -101,9 +101,19 @@ factory('Task', function( $http, $location ){
                 console.log("Theres been an error");
             });
         },
-        remove: function(){
+        remove: function(id, callback){
             // DELETE -> /task/:id
             // DELETE a specific task
+            console.log(id);
+            $http({method:'DELETE', url:'/task/' + id})
+            .success(function(data){
+                if(typeof callback === 'function'){
+                    callback(data);
+                }
+            }).
+            error(function(data){
+
+            });
         }
     }
 });

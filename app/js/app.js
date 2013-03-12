@@ -4,7 +4,7 @@
 // Declare app level module which depends on filters, and services
 
 angular.module('myApp', 
-    ['myApp.filters', 'myApp.services', 'myApp.directives', 'ui', 'ngSanitize']).
+    ['myApp.filters', 'myApp.services', 'myApp.directives', 'ui', 'ngSanitize', 'hmTouchevents']).
   config(['$routeProvider','$locationProvider', function($routeProvider, $locationProvider) {
 
     $locationProvider.html5Mode(true).hashPrefix('!');
