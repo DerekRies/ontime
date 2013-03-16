@@ -424,6 +424,7 @@ markdown h1 {
   -webkit-transition: all 0.5s ease;
 }
 
+
 /* The delays create a slightly better looking effect
   so everything doesn't slide in all at once. Unfortunately
   this isn't an ideal solution as these all have to be typed
@@ -446,7 +447,42 @@ markdown h1 {
   being animated. This will definitely be a TODO.)
 */
 
-/*.task-item:nth-child(5) {
+.task-item:nth-child(10) {
+  transition-delay: 1s;
+  -o-transition-delay: 1s;
+  -moz-transition-delay: 1s;
+  -webkit-transition-delay: 1s;
+}
+
+.task-item:nth-child(9) {
+  transition-delay: .9s;
+  -o-transition-delay: .9s;
+  -moz-transition-delay: .9s;
+  -webkit-transition-delay: .9s;
+}
+
+.task-item:nth-child(8) {
+  transition-delay: .8s;
+  -o-transition-delay: .8s;
+  -moz-transition-delay: .8s;
+  -webkit-transition-delay: .8s;
+}
+
+.task-item:nth-child(7) {
+  transition-delay: .7s;
+  -o-transition-delay: .7s;
+  -moz-transition-delay: .7s;
+  -webkit-transition-delay: .7s;
+}
+
+.task-item:nth-child(6) {
+  transition-delay: .6s;
+  -o-transition-delay: .6s;
+  -moz-transition-delay: .6s;
+  -webkit-transition-delay: .6s;
+}
+
+.task-item:nth-child(5) {
   transition-delay: .5s;
   -o-transition-delay: .5s;
   -moz-transition-delay: .5s;
@@ -479,7 +515,7 @@ markdown h1 {
   -o-transition-delay: .1s;
   -moz-transition-delay: .1s;
   -webkit-transition-delay: .1s;
-}*/
+}
 
 .task-title {
   margin-bottom:5px;
@@ -513,9 +549,29 @@ markdown h1 {
   -webkit-transform: translate3d( 50px, 0px, 0px );
 }
 
+.task-item.to-delete {
+  opacity: 0;
+  transition: all .5s ease;
+  -o-transition: all .5s ease;
+  -moz-transition: all .5s ease;
+  -webkit-transition: all .5s ease;
+  -webkit-transform: translate3d( 50px, 0px, 0px );
+}
+
+
 .task-item.to-complete {
   opacity: 0;
   background:#B4D455;
+  -webkit-transform: translate3d( 225px, 0px, 0px );
+  transition: all 1s ease;
+  -o-transition: all 1s ease;
+  -moz-transition: all 1s ease;
+  -webkit-transition: all 1s ease;
+}
+
+.task-item.to-reactivate {
+  opacity: 0;
+  background:#007FFF;
   -webkit-transform: translate3d( 225px, 0px, 0px );
   transition: all 1s ease;
   -o-transition: all 1s ease;

@@ -4,7 +4,7 @@
 // Declare app level module which depends on filters, and services
 
 angular.module('myApp', 
-    ['myApp.filters', 'myApp.services', 'myApp.directives', 'ui', 'ngSanitize']).
+    ['myApp.filters', 'myApp.services', 'myApp.directives', 'ui', 'ngSanitize', 'hmTouchevents']).
   config(['$routeProvider','$locationProvider', function($routeProvider, $locationProvider) {
 
     $locationProvider.html5Mode(true).hashPrefix('!');
@@ -151,7 +151,7 @@ angular.module('myApp.services', ['ngResource']).
                 }
             }).
             error(function(data){
-                $location.path("/ohno");
+                // $location.path("/ohno");
             });
         },
         getAll: function(callback){
@@ -237,9 +237,19 @@ factory('Task', function( $http, $location ){
                 console.log("Theres been an error");
             });
         },
-        remove: function(){
+        remove: function(id, callback){
             // DELETE -> /task/:id
             // DELETE a specific task
+            console.log(id);
+            $http({method:'DELETE', url:'/task/' + id})
+            .success(function(data){
+                if(typeof callback === 'function'){
+                    callback(data);
+                }
+            }).
+            error(function(data){
+
+            });
         }
     }
 });
@@ -385,7 +395,11 @@ function ProjectDetailsCtrl($scope,
         creating: false,
         completion: 0,
         totalHours: 0,
-        orderProp: 'name'
+        orderProp: 'name',
+        // A task view of 'true' displays all tasks that are complete
+        // a view of 'false' displays all active tasks
+        // and a view of '' displays tasks of both complete and active
+        taskView: 'false'
     }
 
     $('.tooltips').tooltip({
@@ -447,8 +461,21 @@ function ProjectDetailsCtrl($scope,
     };
 
     $scope.recalculateCompletion = function(){
-        $scope.state.completion = Math.ceil(Math.random() * 100);
+
+        var l = $scope.tasks.length,
+            c = $scope.completedTasks(l);
+
+        $scope.state.completion = Math.floor(c / l * 100) || 0; 
+        // $scope.state.completion = Math.ceil(Math.random() * 100);
         $scope.state.totalHours = Math.ceil(Math.random() * 30);
+    };
+
+    $scope.completedTasks = function(l){
+        var total = 0;
+        for(var i=0; i < l; i++){
+            if($scope.tasks[i].complete) total += 1;
+        }
+        return total;
     };
 
     $scope.openNewTask = function(){
@@ -462,7 +489,8 @@ function ProjectDetailsCtrl($scope,
                 projectKey: $routeParams.id,
                 name: $scope.taskname,
                 category: '',
-                priority: 1
+                priority: 1,
+                complete:false
             };
 
             params['key'] = 'none';
@@ -471,6 +499,30 @@ function ProjectDetailsCtrl($scope,
             Task.create(params, function(data){
                 // update the tasks key with the one from the server when we get it
                 params.key = data.task_key
+
+
+
+                if(params.complete){
+                    // if someone clicked the complete button before the server returned
+                    // the key, then we need to do the edit inside the callback
+                    // that returns the key when its available
+                    // unlikely to happen, but you never know if the server hangs
+                    Task.edit(params.key, {
+                        'complete': true
+                    }, function(data){
+                        console.log(data);
+                    });
+                }
+                if(params.toDelete){
+                    console.log(params.toDelete)
+                    // if someone clicked the button to delete this task before the 
+                    // server returned the key.
+                    Task.remove(params.key, function(data){
+                        console.log(data);
+                    });
+                }
+
+
             });
 
             $scope.taskname = '';
@@ -483,13 +535,82 @@ function ProjectDetailsCtrl($scope,
     $scope.completeTask = function(task, i){
         // Animate and update in scope model immediately
         // Update on server in the background
-        $('.task-item').eq(i).addClass('to-complete');
+        $scope.changeTask(task, i, true, 'to-complete');
     };
+
+    $scope.reactivateTask = function(task, i){
+        $scope.changeTask(task, i, false, 'to-reactivate');
+    };
+
+    $scope.toggleCompleteTask = function(task, i){
+        if(task.complete){
+            $scope.reactivateTask(task, i);
+        }
+        else{
+            $scope.completeTask(task, i)
+        }
+    }
 
     $scope.deleteTask = function(task,i){
         // Animate and remove from scope model immediately
         // Remove from server in the background
-        $('.task-item').eq(i).addClass('ui-animate');
+        $('.task-item').eq(i).addClass('to-delete');
+
+        $timeout(function(){
+            // remove the task from the scope.tasks
+            for (var i = 0; i < $scope.tasks.length; i++) {
+                if ($scope.tasks[i] === task){
+                    $scope.tasks.splice(i, 1);
+                    break;
+                }
+            };
+            $scope.recalculateCompletion();
+        },500);
+
+        if(task.key === 'none'){
+            console.log("cant delete just this second");
+            // mark the task to be deleted
+            task.toDelete = true;
+        }
+        else{        
+            Task.remove(task.key, function(data){
+                console.log(data);
+            });
+        }
+    };
+
+    $scope.changeTask = function(task, i, val, classVal){
+        // should wait until all edits have stopped for at least 2 seconds
+        // to remove the spaces, and actually commit the changes.
+        // User could be trying to click through multiple, and removing
+        // from the list shifts the elements around and kills animations.
+        $('.task-item').eq(i).addClass(classVal);
+        $timeout(function(){
+            task.complete = val;
+            $scope.recalculateCompletion();
+        },1000);
+        
+        if(task.key === 'none'){
+            // this is a task that hasnt had its key returned from the server yet.
+            // should instead wait for the key to come back, and then send
+            // the edit.
+
+            // All of that logic is handled inside the create function
+            console.log(task);
+        }
+        else{
+            Task.edit(task.key, {
+                'complete': val
+            }, function(data){
+                console.log(data);
+            });
+        }
+    };
+
+
+    $scope.swipeTest = function(task){
+        console.log(task);
+        alert("Swiped it");
     };
 
 

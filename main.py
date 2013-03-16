@@ -59,6 +59,7 @@ class LoginHandler(BaseHandler):
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
     # CLIENT SIDE PAGES (ROUTE TO MAIN)
+    ('/project', MainHandler),
     (r'/project/.+', MainHandler),
     ('/create', MainHandler),
     ('/settings', MainHandler),

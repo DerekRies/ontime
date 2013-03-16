@@ -15,7 +15,7 @@ angular.module('myApp.services', ['ngResource']).
                 }
             }).
             error(function(data){
-                $location.path("/ohno");
+                // $location.path("/ohno");
             });
         },
         getAll: function(callback){
