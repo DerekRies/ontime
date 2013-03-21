@@ -124,7 +124,65 @@ angular.module('myApp.directives', []).
             }
          },true);
       };    
-});
+})
+ .directive('timer', ['Task', function(Task){
+
+    var template = "<div class='inline-timer pull-right'>" + 
+      "<span class='timer-count'>{{test}}</span><br>" + 
+        "<div class='pull-right'>" + 
+            "<button class='btn btn-small'><i class='icon-play'></i></button><button class='btn btn-small'><i class='icon-stop'></i></button>" + 
+        "</div>" + 
+      "</div>";
+
+    var link = function(scope, element, attrs, model){
+      console.log(scope);
+      console.log(attrs);
+      console.log(model);
+
+      var startTime,
+          stopTime,
+          timeLogged = 0,
+          running = false;
+
+
+      var startBtn = element.find('button')[0];
+      var clearBtn = element.find('button')[1];
+
+      angular.element(startBtn).bind('click', startTimer);
+
+      angular.element(clearBtn).bind('click', stopTimer);
+
+      function startTimer(){
+        if(!running){
+          running = true;
+          startTime = +new Date();
+        }
+      }
+
+      function stopTimer(){
+        if(running){        
+          running = false;
+          stopTime = +new Date();
+          timeLogged += (stopTime - startTime);
+          console.log(timeLogged);
+        }
+      }
+
+
+    };
+
+    var compile = function(el, two){
+      return link;
+    };
+
+    return {
+      restrict: 'E',
+      require: 'ngModel',
+      link: link,
+      compile: compile,
+      template: template
+    }
+ }]);
 
 /* Filters */
 
@@ -133,7 +191,19 @@ angular.module('myApp.filters', []).
     return function(text) {
       return String(text).replace(/\%VERSION\%/mg, version);
     }
-  }]);
+  }]).
+  filter('stopwatch', function(){
+    return function(one){
+        var hours = Math.floor(one / 3600000);
+        var minutes = Math.floor((one % 3600000) / 60000);
+        var seconds = Math.floor((one % 60000) / 1000);
+        hours = hours < 10 ? "0" + hours : hours;
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+        var time = hours + ":" + minutes + ":" + seconds;
+        return time;
+    }
+  });
 
 
 /* Services */
@@ -614,6 +684,44 @@ function ProjectDetailsCtrl($scope,
     };
 
 
+    $scope.startTimer = function(task){
+        if(!task.timerRunning){
+            console.log(task);
+            task.timerStart = +new Date();
+            task.timerRunning = true;
+            task.real_timer = task.time_logged;
+            $scope.updateTime(task);
+        }
+    };
+
+    $scope.updateTime = function(task){
+        $timeout(function(){
+            if(task.timerRunning){
+                task.time_logged += 1000;
+                $scope.updateTime(task);
+            }
+        }, 1000);
+    };
+
+    $scope.stopTimer = function(task){
+        if(task.timerRunning){
+            task.timerRunning = false;
+            task.timerStop = +new Date();
+            task.time_logged = task.real_timer + (task.timerStop - task.timerStart);
+            console.log(task.time_logged);
+            Task.edit(task.key, {
+                'time_logged': task.time_logged
+            },
+                function(data){
+                    console.log(data);
+                });
+        }
+    };
+
+    $scope.clearTimer = function(task){
+        task.timerRunning = false;
+        task.time_logged = 0;
+    };
 }
 
 ProjectDetailsCtrl.$inject = [

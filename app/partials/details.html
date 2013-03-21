@@ -106,6 +106,7 @@
         </div>
 
     </div>
+
     <ul id="task-list">
         <li>
             <button id="newtask-btn" class="btn btn-link" ng-hide="state.creating" ng-click="openNewTask()">Create a Task</button>
@@ -126,14 +127,15 @@
 
                 <button class="btn btn-small" ng-click="deleteTask(task, $index)"><i class="icon-trash"></i></button>
             </div>
+            <!-- <timer ng-model="task" class="pull-right"></timer> -->
             <div class="inline-timer pull-right">
                 
-                <span class="timer-count">00:00:00</span>
+                <span class="timer-count">{{task.time_logged | stopwatch}}</span>
                 <br>
                 <div class="pull-right">
-                    <button class="btn btn-small"><i class="icon-play"></i></button>
-                    <button class="btn btn-small"><i class="icon-stop"></i></button>
-                    <button class="btn btn-small"><i class="icon-remove"></i></button>
+                    <button class="btn btn-small" ng-class="{'btn-primary': task.timerRunning == true}" ng-click="startTimer(task)"><i class="icon-play" ng-class="{'icon-white': task.timerRunning == true}"></i></button>
+                    <button class="btn btn-small" ng-click="stopTimer(task)"><i class="icon-stop"></i></button>
+                    <button class="btn btn-small" ng-click="clearTimer(task)"><i class="icon-remove"></i></button>
                 </div>
             </div>
         </li>

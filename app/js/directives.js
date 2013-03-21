@@ -59,4 +59,62 @@ angular.module('myApp.directives', []).
             }
          },true);
       };    
-});
+})
+ .directive('timer', ['Task', function(Task){
+
+    var template = "<div class='inline-timer pull-right'>" + 
+      "<span class='timer-count'>{{test}}</span><br>" + 
+        "<div class='pull-right'>" + 
+            "<button class='btn btn-small'><i class='icon-play'></i></button><button class='btn btn-small'><i class='icon-stop'></i></button>" + 
+        "</div>" + 
+      "</div>";
+
+    var link = function(scope, element, attrs, model){
+      console.log(scope);
+      console.log(attrs);
+      console.log(model);
+
+      var startTime,
+          stopTime,
+          timeLogged = 0,
+          running = false;
+
+
+      var startBtn = element.find('button')[0];
+      var clearBtn = element.find('button')[1];
+
+      angular.element(startBtn).bind('click', startTimer);
+
+      angular.element(clearBtn).bind('click', stopTimer);
+
+      function startTimer(){
+        if(!running){
+          running = true;
+          startTime = +new Date();
+        }
+      }
+
+      function stopTimer(){
+        if(running){        
+          running = false;
+          stopTime = +new Date();
+          timeLogged += (stopTime - startTime);
+          console.log(timeLogged);
+        }
+      }
+
+
+    };
+
+    var compile = function(el, two){
+      return link;
+    };
+
+    return {
+      restrict: 'E',
+      require: 'ngModel',
+      link: link,
+      compile: compile,
+      template: template
+    }
+ }]);

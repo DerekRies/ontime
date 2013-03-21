@@ -238,6 +238,44 @@ function ProjectDetailsCtrl($scope,
     };
 
 
+    $scope.startTimer = function(task){
+        if(!task.timerRunning){
+            console.log(task);
+            task.timerStart = +new Date();
+            task.timerRunning = true;
+            task.real_timer = task.time_logged;
+            $scope.updateTime(task);
+        }
+    };
+
+    $scope.updateTime = function(task){
+        $timeout(function(){
+            if(task.timerRunning){
+                task.time_logged += 1000;
+                $scope.updateTime(task);
+            }
+        }, 1000);
+    };
+
+    $scope.stopTimer = function(task){
+        if(task.timerRunning){
+            task.timerRunning = false;
+            task.timerStop = +new Date();
+            task.time_logged = task.real_timer + (task.timerStop - task.timerStart);
+            console.log(task.time_logged);
+            Task.edit(task.key, {
+                'time_logged': task.time_logged
+            },
+                function(data){
+                    console.log(data);
+                });
+        }
+    };
+
+    $scope.clearTimer = function(task){
+        task.timerRunning = false;
+        task.time_logged = 0;
+    };
 }
 
 ProjectDetailsCtrl.$inject = [

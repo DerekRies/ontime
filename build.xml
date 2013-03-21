@@ -68,6 +68,7 @@
                 <file name="cosmostrap.min.css"/>
                 <file name="bootstrap-responsive.min.css"/>
                 <file name="app.css"/>
+                <file name="mobile.css"/>
           </filelist>
         </concat>
         <echo>Finished</echo>

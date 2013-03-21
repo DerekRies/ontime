@@ -32,7 +32,7 @@ class ProjectsEndpoint(BaseHandler):
 
     /projects -> deals with all
     GET -> Get all projects
-    POST -> Creates a new Tracker with post data
+    POST -> Creates a new Project with post data
     PUT -> Bulk update all projects
     DELETE -> Delete all projects
     
@@ -72,7 +72,6 @@ class ProjectsEndpoint(BaseHandler):
                              public_editing = editable)
 
             key = project.put()
-            logging.info("CMON QUIT FUCKING DYING HERE YOU BITCH")
             logging.info(key)
             keyurl = key.urlsafe()
             # logging.info(keyurl)
